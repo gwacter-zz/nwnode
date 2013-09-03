@@ -149,7 +149,7 @@ nanowasp.NanoWasp.prototype = {
        // window.onblur = utils.bind(microbee.stop, microbee);
        // window.onfocus = utils.bind(microbee.start, microbee);
     
-        microbee.start();
+       microbee.start();
     },
     
     _toggleTapesMenu: function () {
@@ -585,10 +585,10 @@ nanowasp.Crtc.prototype = {
 
 
 
-var http    = require("http");
-var io = require("socket.io").listen(http.createServer()); 
+//var http    = require("http");
+//var io = require("socket.io").listen(http.createServer()); 
  //   console.log ("io is " + io);
-	var socket= io.connect('localhost:8888', {reconnect:true});
+//	var socket= io.connect('localhost:8888', {reconnect:true});
 
 //	console.log(1);
 //	socket.on('connect', function(socket) {
@@ -615,14 +615,14 @@ var io = require("socket.io").listen(http.createServer());
 
 j=characterImage;
                     //this._graphicsContext.putImageData(characterImage, x, y, 0, 0, nanowasp.CrtcMemory.prototype.CHAR_WIDTH, this._scansPerRow);
-		socket.on('getdata',function(){
-  		console.log("yo render");
+//		socket.on('getdata',function(){
+ // 		console.log("yo render");
 		  
 		charArray.push (characterImage);	
 		
-        io.sockets.emit('printdata', charArray);
-        console.log ("DONE EMITTING");    	
-	});  
+//        io.sockets.emit('printdata', charArray);
+ //       console.log ("DONE EMITTING");    	
+//	});  
     }
      
 
