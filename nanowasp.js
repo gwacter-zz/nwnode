@@ -96,7 +96,23 @@ nanowasp.NanoWasp.prototype = {
         var graphicsContext = document.getElementById("vdu").getContext('2d');
         */
         //this.microbee = new nanowasp.MicroBee(graphicsContext, keyboardContext);
-        this.microbee = new nanowasp.MicroBee();
+var canvas = new fabric.Canvas('c');
+//var rect = new fabric.Rect();
+
+//canvas.add(rect); // add object
+     //   var canvas = fabric.createCanvasForNode(200, 200);
+   //     var rect = new fabric.Rect({
+ // left: 100,
+ // top: 100,
+ // width: 100,
+ // height: 50,
+ // fill: 'red'
+//});
+//canvas.add(rect);
+        //this.microbee = new nanowasp.MicroBee(graphicsContext, keyboardContext);
+       this.microbee = new nanowasp.MicroBee(canvas);
+
+     //   this.microbee = new nanowasp.MicroBee();
         var microbee = this.microbee;
         console.log ("microbee is  " + microbee);    
        /**     
@@ -292,11 +308,14 @@ global.open = function () {
 
 var nanowasp = nanowasp || {};
 
-nanowasp.Crtc = function () {
+//nanowasp.Crtc = function () {
 //nanowasp.Crtc = function (graphicsContext) {
+nanowasp.Crtc = function (canvas) {
 
     this.reset();
  //   this._graphicsContext = graphicsContext;
+      this._canvas = canvas;
+ //     console.log ("canvas is  " )
 };
 
 nanowasp.Crtc.prototype = {
@@ -576,18 +595,19 @@ nanowasp.Crtc.prototype = {
         }
         
         if (fullRenderRequired) {
+            console.log ("canvas is  " + this._canvas);
+            this._canvas.BACKGROUND_COLOR = nanowasp.CrtcMemory.prototype.BACKGROUND_COLOR_CSS;
        //     this._graphicsContext.fillStyle = nanowasp.CrtcMemory.prototype.BACKGROUND_COLOR_CSS;
         //    this._graphicsContext.fillRect(0, 0, this._graphicsContext.canvas.width, this._graphicsContext.canvas.height);
         }
-    	var charArray = new Array();
+ 
 
         console.log ("GOT INTO RENDER IF SO WOW");
 
 
 
 //var http    = require("http");
-//var io = require("socket.io").listen(http.createServer()); 
- //   console.log ("io is " + io);
+// //   console.log ("io is " + io);
 //	var socket= io.connect('localhost:8888', {reconnect:true});
 
 //	console.log(1);
@@ -611,18 +631,35 @@ nanowasp.Crtc.prototype = {
                  //                      console.log ("GOT TO THIS POINT B4 DEFINING CHARACTER IMAGE");
                     var characterImage = this._crtcMemory.getCharacterData(address, this._scansPerRow, cursor);
 
-                                 //       console.log ("characterImage is " + characterImage);
+                                   //    console.log ("characterImage is " + characterImage);
 
 j=characterImage;
+
                     //this._graphicsContext.putImageData(characterImage, x, y, 0, 0, nanowasp.CrtcMemory.prototype.CHAR_WIDTH, this._scansPerRow);
-//		socket.on('getdata',function(){
+	//	socket.on('getdata',function(){
+
+  io.sockets.on('connection', function (socket) {
+  //console.log ("got connected");
+
+//calls the server function getdata 
+socket.on('getdata',function(){
+  console.log("yo.");
+        var charArray = new Array();
+        var stringtest = "var dataTest ='" + characterImage +"';";
+        charArray.push("var dataTest ='" + stringtest);
+//charArray.push (characterImage);  
+        charArray.push(";");  
+  //receives the data from the printdata server function
+  io.sockets.emit('printdata', charArray);
+});
+});
  // 		console.log("yo render");
 		  
-		charArray.push (characterImage);	
 		
-//        io.sockets.emit('printdata', charArray);
+		
+    //    io.sockets.emit('printdata', charArray);
  //       console.log ("DONE EMITTING");    	
-//	});  
+	//});  
     }
      
 
@@ -710,11 +747,11 @@ if (Object.freeze != undefined) {
 
 var nanowasp = nanowasp || {};
 //nanowasp.CrtcMemory = function (charRomData, graphicsContext) {
-nanowasp.CrtcMemory = function (charRomData) {
+nanowasp.CrtcMemory = function (charRomData, canvas) {
     this._charRom = new nanowasp.Rom(charRomData);
     this._pcgRam = new nanowasp.Ram(this.PCG_RAM_SIZE);
     this._videoRam = new nanowasp.Ram(this.VIDEO_RAM_SIZE);
-
+    this._canvas = canvas;
   //  this._graphicsContext = graphicsContext;
     
     this._pcgImages = {};
@@ -828,12 +865,12 @@ nanowasp.CrtcMemory.prototype = {
             // Select character ROM bank
          //   console.log ("DO YOU EVEN GET HERE");
             character += utils.getBit(crtcAddress, this.BIT_MA13) * this.VIDEO_RAM_SIZE / this.MAX_CHAR_HEIGHT;
-
+          //  console.log ("character is  " + character);
         }
         
         if (cursor == null || cursor == undefined) {
             var imageCache = isPcg ? this._pcgImages : this._charRomImages;
-            //        console.log ("new imageCache is " + imageCache[character]);
+                //    console.log ("new imageCache is " + imageCache[character]);
             return imageCache[character];
         } else {
             var memory = isPcg ? this._pcgRam : this._charRom;
@@ -844,21 +881,22 @@ nanowasp.CrtcMemory.prototype = {
     
     _buildAllCharacters: function (cache, memory) {
         // console.log ("IN BUILD ALL CHARACTERS");
-         // console.log ("memory in bac is" + memory);
-        //  console.log ("cache in bac is" + cache);
-       //   console.log ("cache 0 is    " + cache[0]);
+          console.log ("memory in bac is" + memory);
+          console.log ("cache in bac is" + cache);
+          console.log ("cache 0 is    " + cache[0]);
         for (var i = 0; i < memory.getSize() / this.MAX_CHAR_HEIGHT; ++i) {
      //   console.log ("i blah in loop is " + i * this.MAX_CHAR_HEIGHT);
-     //   console.log("cache i is " + cache[i]);
+
        // console.log ("DO I GET HERE");
             cache[i] = this._buildCharacter(cache[i], memory, i * this.MAX_CHAR_HEIGHT);
+          //  console.log("cache i is " + cache[i]);
        //     console.log ("cache data is " + cache[i]);
 
         }
     },
     
     _buildCharacter: function (image, memory, offset, cursor) {
-        //            console.log ("PASSED IMAGES  " + image);
+       //             console.log ("PASSED IMAGES  " + image);
            //  console.log ("in build character");
         //    console.log ("memory is" + memory);
         //    console.log ("offset is" + offset);  
@@ -874,9 +912,9 @@ nanowasp.CrtcMemory.prototype = {
             }
         //    console.log ("GETS TO CALLING BUILDCHARACTERROW");
         //    console.log ("data is  " + data);
-        //    console.log ("IMAGE BEFORE IS  " + image);
+           // console.log ("IMAGE BEFORE IS  " + image);
             image = this._buildCharacterRow(image, data, i);
-      //     console.log ("IMAGE AFTER IS  " + image);
+           // console.log ("IMAGE AFTER IS  " + image);
  
         }
        // console.log ("THIS PT");
@@ -884,25 +922,29 @@ nanowasp.CrtcMemory.prototype = {
     },
     
     _buildCharacterRow: function (image, data, row) {
-    //console.log ("Got inside _buildCharacterRow");
-  //   console.log ("image is" + image);
+        var canvas = new fabric.Canvas('c');
+var rect = new fabric.Rect();
+
+canvas.add(rect);
+    // console.log ("image is" + image);
  //    console.log ("data is" + data);
 
-/**
+
         if (image == null || image == undefined) {
-           // image = this._graphicsContext.createImageData(this.CHAR_WIDTH, this.MAX_CHAR_HEIGHT);
+           image = canvas;
+            // image = this._canvas.createImageData(this.CHAR_WIDTH, this.MAX_CHAR_HEIGHT);
         }
         
         var imageOffset = row * this.CHAR_WIDTH * 4;
         for (var i = this.CHAR_WIDTH - 1; i >= 0; --i) {
             var color = ((data & (1 << i)) != 0) ? this.FOREGROUND_COLOR : this.BACKGROUND_COLOR;
             for (var j = 0; j < color.length; ++j) {
-                image.data[imageOffset++] = color[j];
+             //   image.data[imageOffset++] = color[j];
             }
         }
         
         return image;
-        */
+        
     }
 };
 /*  NanoWasp - A MicroBee emulator
@@ -1123,11 +1165,6 @@ nanowasp.MemMapper = function() {
 
 nanowasp.MemMapper.prototype = {
     connect: function (z80, rams, roms, crtcMemory) {
-        console.log ("z80 is  " + z80);
-        console.log ("rams is  " + rams);
-        console.log ("roms is  " + roms);
-        console.log ("crtcMemory is  " + crtcMemory);
-
         this._z80 = z80;
         this._rams = rams;
         this._roms = roms;
@@ -1302,8 +1339,9 @@ nanowasp.Rom.prototype = {
  */
 
 var nanowasp = nanowasp || {};
-
-nanowasp.MicroBee = function () {
+nanowasp.MicroBee = function (canvas) {
+console.log ("canvas is " + canvas);
+//nanowasp.MicroBee = function () {
         console.log ("Got into microbee initialisation");
 //nanowasp.MicroBee = function (graphicsContext, keyboardContext) {
     this._isRunning = false;
@@ -1316,7 +1354,8 @@ nanowasp.MicroBee = function () {
     this._devices.z80 = nanowasp.z80cpu;
    // this._devices.keyboard = new nanowasp.Keyboard(keyboardContext);
     this._devices.latchrom = new nanowasp.LatchRom();
-    this._devices.crtc = new nanowasp.Crtc();
+   // this._devices.crtc = new nanowasp.Crtc();
+    this._devices.crtc = new nanowasp.Crtc(canvas);
     //this._devices.crtc = new nanowasp.Crtc(graphicsContext);
     this._devices.memMapper = new nanowasp.MemMapper();
     this._devices.rom1 = new nanowasp.Rom(utils.decodeBase64(nanowasp.data.roms.basic_5_22e));
@@ -1328,6 +1367,7 @@ nanowasp.MicroBee = function () {
     this._devices.ram3 = new nanowasp.Ram(32768);
     this._devices.crtcMemory = new nanowasp.CrtcMemory(utils.decodeBase64(nanowasp.data.roms["char"]));
     //this._devices.crtcMemory = new nanowasp.CrtcMemory(utils.decodeBase64(nanowasp.data.roms["char"]), graphicsContext);
+    this._devices.crtcMemory = new nanowasp.CrtcMemory(utils.decodeBase64(nanowasp.data.roms["char"]), canvas);
 
     this._devices.tapeInjector = new nanowasp.TapeInjector(this._devices.z80);
     
@@ -1351,23 +1391,23 @@ nanowasp.MicroBee = function () {
     nanowasp.z80cpu.registerPortDevice(0x0e, this._devices.crtc);
     nanowasp.z80cpu.registerPortDevice(0x1c, this._devices.crtc);
     nanowasp.z80cpu.registerPortDevice(0x1e, this._devices.crtc);
-    console.log ("finished registering port devices");
+ //   console.log ("finished registering port devices");
     for (var i = 0x50; i <= 0x57; ++i) {
         nanowasp.z80cpu.registerPortDevice(i, this._devices.memMapper);
     }
     
     this.currentTape = null;
-    console.log ("registered current tape as null");
+//    console.log ("registered current tape as null");
     // Reset everything to get ready to start
     this.reset();
-    console.log ("finished resetting");
+  //  console.log ("finished resetting");
 };
 
 nanowasp.MicroBee.prototype = {
     MAX_MICROS_TO_RUN: 200000,
         
     reset: function () {
-        console.log ("into reset function");
+       // console.log ("into reset function");
         for (var i in this._devices) {
             console.log (" i letter is " + i);
             //console.log ("devices i is " + devices[i]);
@@ -1396,19 +1436,19 @@ nanowasp.MicroBee.prototype = {
     },
     
     _runSliceBody: function () {
-        console.log ("inside runslicebody");
+      //  console.log ("inside runslicebody");
         var nextMicros = this.MAX_MICROS_TO_RUN;
         
         for (var i in this._runnables) {
             this._runningDevice = this._runnables[i];
             console.log ("this_runningdevice is " + this._runningDevice);
-            console.log ("checkpoint 2");
+         //   console.log ("checkpoint 2");
 
             var deviceNextMicros = this._runningDevice.execute(this._emulationTime, this._microsToRun);
             console.log ("checkpoint 2.5");
 
             if (deviceNextMicros != 0) {
-                        console.log ("checkpoint 3");
+                   //     console.log ("checkpoint 3");
                 nextMicros = Math.min(nextMicros, deviceNextMicros);
             }
         }
@@ -1428,7 +1468,7 @@ nanowasp.MicroBee.prototype = {
             delay = Math.max(0, delay);
           //  window.setTimeout(this._runSlice, delay);
         }
-        console.log ("gets to end");
+      //  console.log ("gets to end");
     },
     
     getTime: function () {
@@ -1445,7 +1485,7 @@ nanowasp.MicroBee.prototype = {
             this._startRealTime = (new Date()).getTime();
             this._startEmulationTime = this._emulationTime;
             this._runSlice();
-            console.log ("DONE RUN SLICE");
+           // console.log ("DONE RUN SLICE");
         }
     },
     
@@ -4236,6 +4276,7 @@ var http    = require("http")
   , chalk   = require("chalk")
   , io      = require("socket.io")
   , fs      = require('fs')
+  , fabric  = require('fabric').fabric
 
 console.log(chalk.cyan("Server up on 8888"))
 var server = http.createServer(requestHandler).listen(8888);
@@ -4273,6 +4314,9 @@ function requestHandler (req, res) {
         console.log(chalk.cyan("Hi yo"))
         var nw = new nanowasp.NanoWasp();
         console.log ("made variable nw");
+
+
+
         nw.main();
         console.log ("finished running through main");    
 
