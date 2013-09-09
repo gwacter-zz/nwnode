@@ -96,7 +96,7 @@ nanowasp.NanoWasp.prototype = {
         var graphicsContext = document.getElementById("vdu").getContext('2d');
         */
         //this.microbee = new nanowasp.MicroBee(graphicsContext, keyboardContext);
-var canvas = new fabric.Canvas('c');
+var canvas = new fabric.StaticCanvas('c');
 //var rect = new fabric.Rect();
 
 //canvas.add(rect); // add object
@@ -585,8 +585,9 @@ nanowasp.Crtc.prototype = {
         }
     },
     
+    //renders the data currently stoed in crtc memory class
     _render: function () {
-        console.log ("ENTERING RENDER");
+    console.log ("ENTERING RENDER");
 	var newRenderState = [this._displayStart, this._vDisplayed, this._hDisplayed, this._scansPerRow];
         var fullRenderRequired = false;
         if (!utils.listsMatch(this._previousRenderState, newRenderState)) {
@@ -600,20 +601,6 @@ nanowasp.Crtc.prototype = {
        //     this._graphicsContext.fillStyle = nanowasp.CrtcMemory.prototype.BACKGROUND_COLOR_CSS;
         //    this._graphicsContext.fillRect(0, 0, this._graphicsContext.canvas.width, this._graphicsContext.canvas.height);
         }
- 
-
-        console.log ("GOT INTO RENDER IF SO WOW");
-
-
-
-//var http    = require("http");
-// //   console.log ("io is " + io);
-//	var socket= io.connect('localhost:8888', {reconnect:true});
-
-//	console.log(1);
-//	socket.on('connect', function(socket) {
-//	console.log('connected');		
-
         var address = this._displayStart;
         var x = 0;
         var y = 0;
@@ -628,29 +615,36 @@ nanowasp.Crtc.prototype = {
                    // console.log ("address is " + address);
                    // console.log ("scans per row is  " + this._scansPerRow);
                    // console.log ("cursor is  " + cursor);
-                 //                      console.log ("GOT TO THIS POINT B4 DEFINING CHARACTER IMAGE");
+
+                   //gets the data stored in crtc memory currently... and returns a bitmap for a single character on screen
                     var characterImage = this._crtcMemory.getCharacterData(address, this._scansPerRow, cursor);
 
-                                   //    console.log ("characterImage is " + characterImage);
+                       //                console.log ("characterImage is " + characterImage);
 
-j=characterImage;
+                    j=characterImage;
 
                     //this._graphicsContext.putImageData(characterImage, x, y, 0, 0, nanowasp.CrtcMemory.prototype.CHAR_WIDTH, this._scansPerRow);
 	//	socket.on('getdata',function(){
 
   io.sockets.on('connection', function (socket) {
-  //console.log ("got connected");
 
-//calls the server function getdata 
+//running servsider getdata function
 socket.on('getdata',function(){
   console.log("yo.");
-        var charArray = new Array();
-        var stringtest = "var dataTest ='" + characterImage +"';";
-        charArray.push("var dataTest ='" + stringtest);
+  //change the canvas to json object
+//var imageCanvas = characterImage.toJSON();
+//change the json object to json string
+//var js = JSON.stringify(imageCanvas);
+//nsole.log ("js being sent is  " + js);
+io.sockets.emit('printdata', characterImage);
+
+//        var charArray = new Array();
+ //       var stringtest = "var dataTest ='" + characterImage +"';";
+      //  charArray.push("var dataTest ='" + stringtest);
 //charArray.push (characterImage);  
-        charArray.push(";");  
+   //     charArray.push(";");  
   //receives the data from the printdata server function
-  io.sockets.emit('printdata', charArray);
+//  io.sockets.emit('printdata', stringtest);
 });
 });
  // 		console.log("yo render");
@@ -854,6 +848,8 @@ nanowasp.CrtcMemory.prototype = {
         this._dirtyPcgImages = {};
     },
     
+    //calculates what bitmap looks like from data currently stored in PCG RAM (programmable character graphics) or 
+    //character ROM which stores the built in front
     getCharacterData: function (crtcAddress, scansPerRow, cursor) {
       //  console.log ("GOT CHARACTER DATA IN THE METHOD NOW");
         var b = this._videoRam.read(crtcAddress % this.VIDEO_RAM_SIZE);
@@ -865,14 +861,15 @@ nanowasp.CrtcMemory.prototype = {
             // Select character ROM bank
          //   console.log ("DO YOU EVEN GET HERE");
             character += utils.getBit(crtcAddress, this.BIT_MA13) * this.VIDEO_RAM_SIZE / this.MAX_CHAR_HEIGHT;
-          //  console.log ("character is  " + character);
         }
         
         if (cursor == null || cursor == undefined) {
             var imageCache = isPcg ? this._pcgImages : this._charRomImages;
-                //    console.log ("new imageCache is " + imageCache[character]);
+         //   console.log ("new imageCache is " + imageCache[32]);
+    //        console.log ("new imageCache is with test" + imageCache[character]);
             return imageCache[character];
         } else {
+            console.log ("GETS INTO DA ELSE");
             var memory = isPcg ? this._pcgRam : this._charRom;
          //   console.log ("IN ELSE ");
             return this._buildCharacter(null, memory, character * this.MAX_CHAR_HEIGHT, cursor);
@@ -881,22 +878,22 @@ nanowasp.CrtcMemory.prototype = {
     
     _buildAllCharacters: function (cache, memory) {
         // console.log ("IN BUILD ALL CHARACTERS");
-          console.log ("memory in bac is" + memory);
-          console.log ("cache in bac is" + cache);
-          console.log ("cache 0 is    " + cache[0]);
+        //  console.log ("memory in bac is" + memory);
+        //  console.log ("cache in bac is" + cache);
+        //  console.log ("cache 0 is    " + cache[0]);
         for (var i = 0; i < memory.getSize() / this.MAX_CHAR_HEIGHT; ++i) {
      //   console.log ("i blah in loop is " + i * this.MAX_CHAR_HEIGHT);
 
-       // console.log ("DO I GET HERE");
             cache[i] = this._buildCharacter(cache[i], memory, i * this.MAX_CHAR_HEIGHT);
-          //  console.log("cache i is " + cache[i]);
+         //   console.log("cache i is " + cache[i]);
        //     console.log ("cache data is " + cache[i]);
 
         }
     },
     
+    //read data stored in PCGRAM
     _buildCharacter: function (image, memory, offset, cursor) {
-       //             console.log ("PASSED IMAGES  " + image);
+          //          console.log ("PASSED IMAGES  " + image);
            //  console.log ("in build character");
         //    console.log ("memory is" + memory);
         //    console.log ("offset is" + offset);  
@@ -911,7 +908,7 @@ nanowasp.CrtcMemory.prototype = {
                 data ^= 0xff;
             }
         //    console.log ("GETS TO CALLING BUILDCHARACTERROW");
-        //    console.log ("data is  " + data);
+           // console.log ("data is  " + data);
            // console.log ("IMAGE BEFORE IS  " + image);
             image = this._buildCharacterRow(image, data, i);
            // console.log ("IMAGE AFTER IS  " + image);
@@ -922,24 +919,25 @@ nanowasp.CrtcMemory.prototype = {
     },
     
     _buildCharacterRow: function (image, data, row) {
-        var canvas = new fabric.Canvas('c');
-var rect = new fabric.Rect();
+        var canvas = new fabric.StaticCanvas('c');
+   var newImage = canvas.contextContainer.getImageData(1, 1,this.CHAR_WIDTH, this.MAX_CHAR_HEIGHT);
 
-canvas.add(rect);
     // console.log ("image is" + image);
  //    console.log ("data is" + data);
-
+//    console.log ("Row is   " + row);
 
         if (image == null || image == undefined) {
-           image = canvas;
+           image = newImage;
             // image = this._canvas.createImageData(this.CHAR_WIDTH, this.MAX_CHAR_HEIGHT);
         }
         
         var imageOffset = row * this.CHAR_WIDTH * 4;
+
         for (var i = this.CHAR_WIDTH - 1; i >= 0; --i) {
             var color = ((data & (1 << i)) != 0) ? this.FOREGROUND_COLOR : this.BACKGROUND_COLOR;
             for (var j = 0; j < color.length; ++j) {
-             //   image.data[imageOffset++] = color[j];
+              //  console.log ("image is " + image);
+                image.data[imageOffset++] = color[j];
             }
         }
         
@@ -1386,7 +1384,6 @@ console.log ("canvas is " + canvas);
     
     // Register the ports
     nanowasp.z80cpu.registerPortDevice(0x0b, this._devices.latchrom);
-    
     nanowasp.z80cpu.registerPortDevice(0x0c, this._devices.crtc);
     nanowasp.z80cpu.registerPortDevice(0x0e, this._devices.crtc);
     nanowasp.z80cpu.registerPortDevice(0x1c, this._devices.crtc);
