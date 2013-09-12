@@ -42,35 +42,30 @@
 	});
 		// call the server-side function 'adduser' and send one parameter (value of prompt)
 	socket.on('printdata', function(imagedataobject){ 
+		var canvas=document.getElementById("vdu");
+		var ctx=canvas.getContext("2d");
+		var length = imagedataobject.data.length;
 
- 
+		var imageData= ctx.createImageData(100,100);
+	
+		for (var i=0; i < length; i++) {
+			imageData [i] = imagedataobject.data[i];
+		}
 
+		ctx.putImageData(imageData, xvar, yvar, 0, 0, 8, 16);
+		ctx.drawImage(canvas, 0, 0);
+		console.log ("imagedata passed is  " + imagedataobject);
+ 	
+ 		if (xcount >63) {
+ 			xvar=0;
+ 			xcount = 0;
+  			yvar = yvar + 16;
+ 		} 
 
-	var c=document.getElementById("vdu");
-	var ctx=c.getContext("2d");
-//	console.log ("ctx is  " + ctx);
-	var length = imagedataobject.data.length;
-
-var imageData= ctx.createImageData(100,100);
-for (var i=0; i < length; i++) {
-
-	imageData [i] = imagedataobject.data[i];
-	console.log ('yeah ok');
-}
-
-	ctx.putImageData(imageData, xvar, yvar, 0, 0, 8, 16);
-
- if (xcount >63) {
- 	xvar=0;
- 	xcount = 0;
-  	yvar = yvar + 16;
- } 
-
- else {
-	xcount++;
-  	xvar = xvar + 8;
-
- }
+ 		else {
+			xcount++;
+  			xvar = xvar + 8;
+		}
 
 	});
 </script>

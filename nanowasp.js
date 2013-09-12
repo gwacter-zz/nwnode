@@ -96,7 +96,16 @@ nanowasp.NanoWasp.prototype = {
         var graphicsContext = document.getElementById("vdu").getContext('2d');
         */
         //this.microbee = new nanowasp.MicroBee(graphicsContext, keyboardContext);
-var canvas = new fabric.StaticCanvas('c');
+var canvas = new fabric.Canvas('vdu');
+var rect = new fabric.Rect({
+    left: 0,
+    top: 0,
+    fill: 'red',
+    width: 256,
+    height: 512
+});
+
+canvas.add(rect);
 //var rect = new fabric.Rect();
 
 //canvas.add(rect); // add object
@@ -573,9 +582,6 @@ nanowasp.Crtc.prototype = {
     
     _calculateVBlank: function () {
         var CHAR_CLOCK_HZ = 1687500; 
-
-     //   this._graphicsContext.canvas.width = this._hDisplayed * nanowasp.CrtcMemory.prototype.CHAR_WIDTH;
-      //  this._graphicsContext.canvas.height = this._vDisplayed * this._scansPerRow;
         
         this._frameTime = this._hTotal * (this._vTotal * this._scansPerRow + this._vTotalAdjustment) * 1000000 / CHAR_CLOCK_HZ;
         this._vblankTime = this._hTotal * ((this._vTotal - this._vDisplayed) * this._scansPerRow + this._vTotalAdjustment) * 1000000 / CHAR_CLOCK_HZ;
@@ -618,9 +624,7 @@ nanowasp.Crtc.prototype = {
 
                    //gets the data stored in crtc memory currently... and returns a bitmap for a single character on screen
                     var characterImage = this._crtcMemory.getCharacterData(address, this._scansPerRow, cursor);
-                    console.log ('char width is ' + nanowasp.CrtcMemory.prototype.CHAR_WIDTH);
-                    console.log ('scans per row is ' + this._scansPerRow);
-
+    
 
                        //                console.log ("characterImage is " + characterImage);
 
@@ -922,16 +926,9 @@ nanowasp.CrtcMemory.prototype = {
     },
     
     _buildCharacterRow: function (image, data, row) {
-        var canvas = new fabric.StaticCanvas('c');
-   var newImage = canvas.contextContainer.getImageData(1, 1,this.CHAR_WIDTH, this.MAX_CHAR_HEIGHT);
-
-    // console.log ("image is" + image);
- //    console.log ("data is" + data);
-//    console.log ("Row is   " + row);
 
         if (image == null || image == undefined) {
-           image = newImage;
-            // image = this._canvas.createImageData(this.CHAR_WIDTH, this.MAX_CHAR_HEIGHT);
+              image = this._canvas.contextContainer.createImageData(this.CHAR_WIDTH, this.MAX_CHAR_HEIGHT);                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     
         }
         
         var imageOffset = row * this.CHAR_WIDTH * 4;
