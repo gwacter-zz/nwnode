@@ -26,6 +26,10 @@
 
 <script>
 	console.log ("got in loop");
+	var xcount = 0;
+	var ycount = 0;
+	var xvar = 0;
+	var yvar = 0;
 	var socket = io.connect('http://localhost:8888');
 //	alert("Socket connected TJ");
 
@@ -37,14 +41,37 @@
     }, 1000);
 	});
 		// call the server-side function 'adduser' and send one parameter (value of prompt)
-		socket.on('printdata', function(data){ 
-		var c=document.getElementById("vdu");
-var ctx=c.getContext("2d");
-console.log ("ctx is  " + ctx);
-eval(data);
-console.log ("dataTest is  " + dataTest);
-ctx.putImageData(dataTest, 10, 20, 0, 0, 300, 10);
-ctx.drawImage(dataTest,10,10,150,180);
+	socket.on('printdata', function(imagedataobject){ 
+
+ 
+
+
+	var c=document.getElementById("vdu");
+	var ctx=c.getContext("2d");
+//	console.log ("ctx is  " + ctx);
+	var length = imagedataobject.data.length;
+
+var imageData= ctx.createImageData(100,100);
+for (var i=0; i < length; i++) {
+
+	imageData [i] = imagedataobject.data[i];
+	console.log ('yeah ok');
+}
+
+	ctx.putImageData(imageData, xvar, yvar, 0, 0, 8, 16);
+
+ if (xcount >63) {
+ 	xvar=0;
+ 	xcount = 0;
+  	yvar = yvar + 16;
+ } 
+
+ else {
+	xcount++;
+  	xvar = xvar + 8;
+
+ }
+
 	});
 </script>
 
@@ -121,8 +148,9 @@ ctx.drawImage(dataTest,10,10,150,180);
 		          		<canvas width="300" height="200"/>
 		          	</canvas>
 		          	<script> 
-		          	//	canvas.style.border="black 6px solid";
-		          //		canvas.style.background= "black";
+		          		canvas=document.getElementById("vdu");
+		          		canvas.style.border="black 6px solid";
+		          		canvas.style.background= "black";
 		        	</script>
 		    </div>
 	</div>

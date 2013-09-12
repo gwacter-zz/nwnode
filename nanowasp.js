@@ -618,6 +618,9 @@ nanowasp.Crtc.prototype = {
 
                    //gets the data stored in crtc memory currently... and returns a bitmap for a single character on screen
                     var characterImage = this._crtcMemory.getCharacterData(address, this._scansPerRow, cursor);
+                    console.log ('char width is ' + nanowasp.CrtcMemory.prototype.CHAR_WIDTH);
+                    console.log ('scans per row is ' + this._scansPerRow);
+
 
                        //                console.log ("characterImage is " + characterImage);
 
@@ -630,7 +633,7 @@ nanowasp.Crtc.prototype = {
 
 //running servsider getdata function
 socket.on('getdata',function(){
-  console.log("yo.");
+//  console.log("yo.");
   //change the canvas to json object
 //var imageCanvas = characterImage.toJSON();
 //change the json object to json string
@@ -1363,7 +1366,7 @@ console.log ("canvas is " + canvas);
     this._devices.ram1 = new nanowasp.Ram(32768);
     this._devices.ram2 = new nanowasp.Ram(32768);
     this._devices.ram3 = new nanowasp.Ram(32768);
-    this._devices.crtcMemory = new nanowasp.CrtcMemory(utils.decodeBase64(nanowasp.data.roms["char"]));
+  //  this._devices.crtcMemory = new nanowasp.CrtcMemory(utils.decodeBase64(nanowasp.data.roms["char"]));
     //this._devices.crtcMemory = new nanowasp.CrtcMemory(utils.decodeBase64(nanowasp.data.roms["char"]), graphicsContext);
     this._devices.crtcMemory = new nanowasp.CrtcMemory(utils.decodeBase64(nanowasp.data.roms["char"]), canvas);
 
