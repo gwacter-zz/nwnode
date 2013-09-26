@@ -97,15 +97,8 @@ nanowasp.NanoWasp.prototype = {
         */
         //this.microbee = new nanowasp.MicroBee(graphicsContext, keyboardContext);
 var canvas = new fabric.Canvas('vdu');
-var rect = new fabric.Rect({
-    left: 0,
-    top: 0,
-    fill: 'red',
-    width: 256,
-    height: 512
-});
+//var canvas = fabric.createCanvasForNode(200, 200);
 
-canvas.add(rect);
 //var rect = new fabric.Rect();
 
 //canvas.add(rect); // add object
@@ -602,7 +595,6 @@ nanowasp.Crtc.prototype = {
         }
         
         if (fullRenderRequired) {
-            console.log ("canvas is  " + this._canvas);
             this._canvas.BACKGROUND_COLOR = nanowasp.CrtcMemory.prototype.BACKGROUND_COLOR_CSS;
        //     this._graphicsContext.fillStyle = nanowasp.CrtcMemory.prototype.BACKGROUND_COLOR_CSS;
         //    this._graphicsContext.fillRect(0, 0, this._graphicsContext.canvas.width, this._graphicsContext.canvas.height);
@@ -618,9 +610,6 @@ nanowasp.Crtc.prototype = {
                 }
                 
                 if (fullRenderRequired || cursor != null || address == this._lastCursorPosition || this._crtcMemory.isDirty(address)) {
-                   // console.log ("address is " + address);
-                   // console.log ("scans per row is  " + this._scansPerRow);
-                   // console.log ("cursor is  " + cursor);
 
                    //gets the data stored in crtc memory currently... and returns a bitmap for a single character on screen
                     var characterImage = this._crtcMemory.getCharacterData(address, this._scansPerRow, cursor);
@@ -630,20 +619,47 @@ nanowasp.Crtc.prototype = {
 
                     j=characterImage;
 
+
+
+
+//            console.log ("canvas today is  " + this._canvas);
+
                     //this._graphicsContext.putImageData(characterImage, x, y, 0, 0, nanowasp.CrtcMemory.prototype.CHAR_WIDTH, this._scansPerRow);
 	//	socket.on('getdata',function(){
+//var fs = require('fs'),
+ //   fabric = require('fabric').fabric,
+  //  out = fs.createWriteStream(__dirname + '/test.png');
+
+//var canvas_new = fabric.createCanvasForNode(200, 200);
+//var text = new fabric.Text('Hi TJ', {
+//  left: 100,
+ // top: 100,
+//  fill: '#f55',
+//  angle: 15
+//});
+//canvas_new.add(text);
+
+//var stream = canvas_new.createPNGStream();
+//stream.on('data', function(chunk) {
+ // out.write(chunk);
+//});
+
 
   io.sockets.on('connection', function (socket) {
-
+    socket.on('getdata',function(){
+    io.sockets.emit('printdata', characterImage);
+});
+});
 //running servsider getdata function
-socket.on('getdata',function(){
+
+
+
 //  console.log("yo.");
   //change the canvas to json object
 //var imageCanvas = characterImage.toJSON();
 //change the json object to json string
 //var js = JSON.stringify(imageCanvas);
 //nsole.log ("js being sent is  " + js);
-io.sockets.emit('printdata', characterImage);
 
 //        var charArray = new Array();
  //       var stringtest = "var dataTest ='" + characterImage +"';";
@@ -652,8 +668,9 @@ io.sockets.emit('printdata', characterImage);
    //     charArray.push(";");  
   //receives the data from the printdata server function
 //  io.sockets.emit('printdata', stringtest);
-});
-});
+
+
+
  // 		console.log("yo render");
 		  
 		
@@ -4271,99 +4288,41 @@ function disassemble(address, count) {
 
 var http    = require("http")
   , chalk   = require("chalk")
-  , io      = require("socket.io")
   , fs      = require('fs')
   , fabric  = require('fabric').fabric
+  , app = require('express')()
+  , server = require('http').createServer(app)
+  , io = require('socket.io').listen(server);
 
-console.log(chalk.cyan("Server up on 8888"))
-var server = http.createServer(requestHandler).listen(8888);
-io = io.listen(server) 
-//var array = new Array ();
 
-//establishes the connection
-//io.sockets.on('connection', function (socket) {
-//  console.log ("got connected");
-//});
+server.listen(8888);
+console.log(chalk.cyan("Server up on 8888"));
+console.log(chalk.cyan('io value is ' + io));
 
-function requestHandler (req, res) {
+app.get('/:pagename', function(req, res){
 
-    if(req.url == "/init"){
-        console.log("Starting a new Z80 Mahcine");
-
-        // Start the machine
+if (req.params.pagename == "Games.html"){
+       res.sendfile(__dirname + "/" + req.params.pagename);
         nanowasp.Keyboard.init();
-        console.log(chalk.cyan("Hi yo"))
+        console.log(chalk.cyan("Hi loading Games page"))
         var nw = new nanowasp.NanoWasp();
         console.log ("made variable nw");
         nw.main();
-        console.log ("finished running through main");    
-      res.setHeader("Content-Type", "text/html");
-      res.end("Machine Started :");
-
-    }
-
-
-
-  else if  (req.url == "/Games.html") {
-
-    fs.readFile("Games.html", function(err, text){
-        nanowasp.Keyboard.init();
-        console.log(chalk.cyan("Hi yo"))
-        var nw = new nanowasp.NanoWasp();
-        console.log ("made variable nw");
-
-
-
-        nw.main();
-        console.log ("finished running through main");    
-
-      res.setHeader("Content-Type", "text/html");
-      res.end(text);
-    });
-
-   }
-
-   else {
-    console.log ("redirect nowhere");
-   } 
-
-console.log("Incomming Request");
-
- console.log(chalk.cyan("Request: " + req.url));   
- console.log(chalk.cyan("Response: " + res.url));   
-/**
-    else if(req.url == "/data.js") {
-    console.log ("data js url");    
-    fs.readFile("data.js", function(err, text){
-      res.setHeader("Content-Type", "text/javascript");
-      res.end(text);
-    });
-    return;
-
-  }
-
-    else if(req.url == "/index1.html") {
-    console.log ("data js url");    
-    fs.readFile("index1.html", function(err, text){
-      res.setHeader("Content-Type", "text/html");
-      res.end(text);
-    });
-    return;
-
-  }
-
-
-    else if(req.url == "/z80.js") {
-    console.log ("z80 js url");    
-    fs.readFile("z80.js", function(err, text){
-      res.setHeader("Content-Type", "text/javascript");
-      res.end(text);
-    });
-    return;
+        console.log ("finished running through main"); 
+        res.setHeader("Content-Type", "text/html");
+     
 }
-*/
 
-} 
+else {
+      res.sendfile(__dirname + "/" + req.params.pagename);  
+}
+});
+
+
+
+
+
+//} 
 
 /*! z80.jscpp: z80 supplementary functions
    Copyright (c) 1999-2008 Philip Kendall, Matthew Westcott

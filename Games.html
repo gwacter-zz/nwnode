@@ -1,4 +1,3 @@
-<!DOCTYPE HTML>
 <html>
 <head>
 <title>Play Microbee Games</title>
@@ -24,14 +23,17 @@
 </script>
 <script src="http://localhost:8888/socket.io/socket.io.js"></script>
 
+<!--<script src="http://localhost:8888/socket.io/socket.io.js"></script> -->
 <script>
-	console.log ("got in loop");
+	alert ("got in loop");
 	var xcount = 0;
 	var ycount = 0;
 	var xvar = 0;
 	var yvar = 0;
-	var socket = io.connect('http://localhost:8888');
-//	alert("Socket connected TJ");
+
+	var socket = io.connect("http://localhost:8888");
+
+	alert("Socket connected TJ");
 
 	// on connection to server call the get data method
 	socket.on('connect', function(){
@@ -46,14 +48,17 @@
 		var ctx=canvas.getContext("2d");
 		var length = imagedataobject.data.length;
 
-		var imageData= ctx.createImageData(100,100);
+	//	var imageData= ctx.createImageData(100,100);
 	
-		for (var i=0; i < length; i++) {
-			imageData [i] = imagedataobject.data[i];
-		}
+	//	for (var i=0; i < length; i++) {
+//			imageData [i] = imagedataobject.data[i];
+//		}
 
-		ctx.putImageData(imageData, xvar, yvar, 0, 0, 8, 16);
-		ctx.drawImage(canvas, 0, 0);
+//		ctx.fillStyle="#FF0000";
+//		ctx.fillRect(20,20,150,100)
+
+	//	ctx.putImageData(imageData, xvar, yvar, 0, 0, 8, 16);
+//		ctx.drawImage(canvas, 0, 0);
 		console.log ("imagedata passed is  " + imagedataobject);
  	
  		if (xcount >63) {
@@ -75,13 +80,14 @@
 <body>
 	<div class="navbar navbar-inverse navbar-fixed-top">
 		<div class="navbar-inner">
+
 			<div class="container">
-				<button type="button" class="btn btn-navbar" data-toggle="collapse"
+			<!--	<button type="button" class="btn btn-navbar" data-toggle="collapse"
 					data-target=".nav-collapse">
 					<span class="icon-bar"></span> <span class="icon-bar"></span> <span
 						class="icon-bar"></span>
 				</button>
-
+-->
 				<a class="brand" href="#">Nanowasp Microbee</a>
 				<div class="nav-collapse collapse">
 					<ul class="nav">
@@ -89,6 +95,7 @@
 						<li><a href="About.html"> About</a></li>
 						<li class="active"><a href="Games.html">Games</a></li>
 					    <li><a href="Contact.html">Contact</a></li> 
+					    <li> <a href= "RegisterUser.html"> Login </a></li>
 					</ul>	    
          	    			
 
@@ -118,10 +125,11 @@
 						</li>
 					</ul>
 
+
 				</div>
 			</div>
 		</div>
-	</div>
+	</div> 
 <br/>
 <br/>
 
@@ -236,3 +244,4 @@
     
 </body>
 </html>
+
