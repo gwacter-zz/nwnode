@@ -1,8 +1,8 @@
 <!DOCTYPE HTML>
-<!-- GAMES PAGE WITH NANOWASP RUNNING LOCALLY -->
+
 <html>
 <head>
-<title>Play Microbee Games</title>
+<title>Home </title>
 <link
 	href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.0/css/bootstrap-combined.min.css"
 	rel="stylesheet"> </link>
@@ -30,6 +30,8 @@ $.get("demo_test.txt", function(data, status){
 </head>
 
 <body>
+	<br/><br/><br/>
+	<h2 align="center"> Welcome to Microbee GamePlay </h2>
 	<div class="navbar navbar-inverse navbar-fixed-top">
 		<div class="navbar-inner">
 			<div class="container">
@@ -39,165 +41,44 @@ $.get("demo_test.txt", function(data, status){
 						class="icon-bar"></span>
 				</button>
 
-				<a class="brand" href="#">Nanowasp Microbee</a>
+				<a class="brand" href="#">Microbee Games</a>
 				<div class="nav-collapse collapse">
 					<ul class="nav">
 						<li class="active"><a href="Home.html"> Home </a></li>
-						<li><a href="About.html"> About</a></li>
-						<li class="active"><a href="Games.html">Games</a></li>
-					    	<li><a href="Contact.html">Contact</a></li> 
-					</ul>	    
-         	    			
-
-					<ul class="nav pull-right">
-						<li><a href="RegisterUser.html"> Register </a></li>
-						<li class="divider-vertical"></li>
-						<li class="dropdown"><a class="dropdown-toggle" href="#"
-							data-toggle="dropdown">Sign In <strong class="caret"></strong></a>
-							<div class="dropdown-menu"
-								style="padding: 15px; padding-bottom: 0px;">
-								<form action="[YOUR ACTION]" method="post"
-									accept-charset="UTF-8">
-									<label class="string optional" for="username"> Email </label> <input
-										id="user_username" style="margin-bottom: 15px;" type="text"
-										name="user[username]" size="30" /> <label
-										class="string optional" for="username"> Password </label> <input
-										id="user_password" style="margin-bottom: 15px;"
-										type="password" name="user[password]" size="30" /> <input
-										id="user_remember_me" style="float: left; margin-right: 10px;"
-										type="checkbox" name="user[remember_me]" value="1" /> <label
-										class="string optional" for="user_remember_me">
-										Remember me</label> <input class="btn btn-primary"
-										style="clear: left; width: 100%; height: 32px; font-size: 13px;"
-										type="submit" name="commit" value="Sign In" />
-								</form>
-							</div>
-						</li>
-					</ul>
-
+						<li><a href="Games.html">Games</a></li>
+					</ul>		
 				</div>
+
+				<div class= "nav pull-right">
+ 					<p class="navbar-text">Logged in as: </p>
+ 				</div>	
+<!--  					<p method="post" action="/logout"> <a href="/logout">Logout</a> </p>
+ -->				
 			</div>
 		</div>
 	</div>
 <br/>
 <br/>
 
-<div style="width: 800px; position: relative; margin: 0 auto;">
-	<div style="width: 40%; position: absolute; top: 170px;">
- 		    <div id="tape_menuitem">
-	            <span id="tape_loading" style="display: none;">loading...</span>
-	        </div> 
-		    <div style="width:50px; position: inline; margin: 0 auto;">
-                   <div id="debugger" class="hidden" style="position: fixed; z-index: 1; left: 50px;">
-                      <pre id="registers"></pre>
-                   </div>
-		        
-		           <noscript>
-                      <div class="error">NanoWasp relies on JavaScript. Please enable JavaScript if it's disabled, or switch to a browser that supports JavaScript.</div>    
-                   </noscript>
-                   
-		          	<canvas id="vdu" width="840" height="900" style="width: 700px; height: 500px;">
-		          		<canvas width="300" height="200"/>
-		          	</canvas>
-		          	<script> 
-		          		canvas=document.getElementById("vdu");
-		          		canvas.style.border="black 6px solid";
-		          		canvas.style.background= "black";
-		        	</script>
-		    </div>
-	</div>
-</div>
+<div class="hero-unit">
 
-<div class="alert">
-  <button type="button" class="close" data-dismiss="alert">&times;</button>
+<p class="lead">This project aims to help deploy old computer games Microbee was the first commercially marketed Australian PC manufactured by Applied Technology in June 1982. It ran off the MicroWorld BASIC DGOS (David Griffiths Operating System) operating system and its introductory price was AUD399.00 for the kit. Initially it was released as a kit in 1982 but later sold assembled in Australia and Sweden. It contained either 16 Kilobytes or 32 Kilobytes of memory and had a Zilog Z80 (2 MHz clock speed) CPU. Originally its architecture consisted of a two board unit. One board had the keyboard, Zilog Z80 microprocessor, Synertek 6545 CRT controller, 2 Kilobytes of screen RAM, 2 Kilobytes of character ROM (128 characters) and 2 Kilobytes of Programmable Character Graphics (PCG) RAM (128 characters). A byte within the screen RAM addressed a character in either the character ROM or PCG RAM. The other board (core board) had the memory and eventually had a floppy disk controller (wiki). Effectively it was found to be quite similar to the Radio Shack TRX-80 home computer (which was released in 1977). Comparable to the TRX-80 it had graphic characters, programmable on the same 8 x 16 pixel pattern as screen characters (ASCII). Implementation of programs enabling a user to draw fine lines at any orientation and curve was made possible due to the existence of the graphic characters. The Microbee contained a ROM (which itself had a tiny basic inside it). Microbee however offered the capability for other ROM based components to be included.Initially the Microbee was used in Swedish schools. 
+<br/>
+</p>
 
-<b> Instructions: </b> 
-<ol>
-	<li> Select the tape to run </li>
-	<li> Type 'load' into the display and press Enter </li>
-	<li> Type 'run' into the display and press Enter </li>
-</ol>	
-<b> Current Tape: </b>
- <span id="selected_tape_name"> <span id="tape_loading" style="display: none;">loading...</span></span> 
-</div>
+<p class="lead">
+The Microbee was successful in its initial years, however it was found to be incapable of competing against the present day competitors, one of which was Apple ][ that offered better functionality and range of software. Within a year of the Microbee's first release, the IBM PC (the first Intel based PC) was released. It was also found the manufacturer of Microbee was slow in upgrading the early Microbee to have full graphic capabilities  making the Apple ][ more useful for school use.  Officially it discontinued use in 1990.
+So the aim is to make these games available.
 
+</p>
 
-	<div class="span3">
-		<div class="well sidebar-nav">
-			<br />
-
-			<ul class="nav nav-list">
-				<li class="nav-header">Available Games </li>
-				<li class="active"> <a href="#" rel="tooltip" data-placement="bottom" title="A Game of Survival"> Camel Race </a></li>
-				<li><a rel="tooltip" data-placement="bottom" title="Escape from the Frankenstein Monster">Frankenstein's Monster</a></li>
-				<li><a rel="tooltip" data-placement="bottom" title="Stop Jeskil the Sorcerer enacting revenge">Jekskil's Revenge</a></li>
-				<li><a rel="tooltip" data-placement="bottom" title="Puzzle Game">The Towers of Hanoi</a></li>
-				<li><a rel="tooltip" data-placement="bottom" title="Avoid the torpedoes, take out the subs">Depth Charge</a></li>
-				<li><a rel="tooltip" data-placement="bottom" title="Chase the dot, avoid the laser beam">Laser Blazer</a></li>
-				<li><a rel="tooltip" data-placement="bottom" title="Shooting evil robots">Robot Fire</a></li>
-				<li><a rel="tooltip" data-placement="bottom" title="Spaceship Laser beam Shooting">Space Lanes</a></li>
-				<li><a rel="tooltip" data-placement="bottom" title="Multiplayer game bounce the ball without dying">Bounce</a></li>
-				<li><a rel="tooltip" data-placement="bottom" title="Shoot the balls and break the wall">Break Out</a></li>
-				<li><a rel="tooltip" data-placement="bottom" title="No description currently available">Catack</a></li>
-				<li><a rel="tooltip" data-placement="bottom" title="Guide the caterpillar to the ripe mushrooms whilst it can move">Catter</a></li>
-				<li><a rel="tooltip" data-placement="bottom" title="Guide the caterpillar to the ripe mushrooms whilst it can move">Catter 2</a></li>
-				<li><a rel="tooltip" data-placement="bottom" title="Guide the caterpillar to the ripe mushrooms whilst it can move">Catter 3</a></li>
-				<li><a rel="tooltip" data-placement="bottom" title="Control Ship around Earth">Earth</a></li>
-				<li><a rel="tooltip" data-placement="bottom" title="Simple Adventure Game">Isbok Adventure</a></li>
-				<li><a rel="tooltip" data-placement="bottom" title="Survive the Maze">Mazes</a></li>
-				<li><a rel="tooltip" data-placement="bottom" title="Othello/Checkers">Othello</a></li>
-				<li><a rel="tooltip" data-placement="bottom" title="Single player Pacman">Pucker</a></li>
-			</ul>
-
-			<ul class="nav nav-list"> 
-				<li class="nav-header">Options </li>
-				<li class="dropdown" id="tape_menu">
-            				<a href="#" class="dropdown-toggle" data-toggle="dropdown">Select Game<b class="caret"></b></a>
-            				<ul class="dropdown-menu">
-            					<menu id="tapes"> </menu>
-								<input id="tape_file" type="file" multiple></input> 
-             				</ul>
-         		</li>	
-				<li> 
-					<div><span id="reset_button" class="link">Reset</span></div>
-				</li>
-				<li>
-					<div><span id="debugger_button" class="link">Show Debugger</span></div>
-				</li>
-			</ul>
-		</div>
-
-	</div>
-
-<div id="messages" style="position: fixed; left: 0; right: 0; bottom: 0;">
-	<div id="error" style="background: #ff8080; color: #300000; border-top: solid 1px black; padding: 15px; display: none;">
-		<div style="float: right; margin-right: 15px"><span id="hide_error_button" class="link" style="color: #C00000; font-weight: bold;">x</a></div>
-		<div id="error_message" style="margin: 0 50px"></div>
-	</div>
-	<div id="notice" style="background: beige; border-top: solid 1px black; padding: 15px; text-align: center; display: none;">
-		<div style="float: right; margin-right: 15px"><span id="hide_notice_button" class="link" style="font-weight: bold;">x</a></div>
-	</div>
-</div>
-
-
-<script src="nanowasp.js"></script>
-<script src="z80.js"></script>
-<script src="data.js"></script>
-<script src="http://localhost:8888/socket.io/socket.io.js" type="text/javascript"></script>
-<script type="text/javascript">
-            tick = io.connect('http://localhost:8888/');
-            tick.on('data', function (data) {
-                console.log(data);
-            });
-
-            tick.on('error', function (reason){
-              console.error('Unable to connect Socket.IO', reason);
-            });
-
-            tick.on('connect', function (){
-              console.info('successfully established a working and authorized connection');
-            });
-        </script>
-
+</div>	
 </body>
+
+ <footer>
+  <p>To find out further details about
+		this project please contact the primary investigator <a href="http://www.linkedin.com/pub/tania-jacob/51/190/127"> Tania Jacob</a> 
+  </p>
+</footer>  
+
 </html>

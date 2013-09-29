@@ -39,7 +39,7 @@
 
 		var socket = io.connect("http://localhost:8888");
 
-		alert("Socket connected TJ");
+	//	alert("Socket connected TJ");
 
 		// on connection to server call the get data method
 		socket.on('connect', function(){
@@ -145,18 +145,25 @@
 						class="icon-bar"></span>
 				</button>
 -->
-				<a class="brand" href="#">Nanowasp Microbee</a>
+				<a class="brand" href="#">Microbee Games</a>
 				<div class="nav-collapse collapse">
 					<ul class="nav">
 						<li><a href="Home.html"> Home </a></li>
-						<li><a href="About.html"> About</a></li>
+						<li><a href="About.html"> Background</a></li>
 						<li class="active"><a href="Games.html">Games</a></li>
-					    <li><a href="Contact.html">Contact</a></li> 
-					 </ul>	    
-         	    						
-				</div>
+					</ul>	    
+         	    </div>
+
+				<div class= "nav pull-right">
+ 					<p class="navbar-text">Logged in as: </p>
+ 		
+<!--  					<p method="post" action="/logout"> <a href="/logout">Logout</a> </p>
+ -->				</div>	
+
 			</div>
 		</div>
+
+
 	</div>
 
 <br/>
@@ -270,7 +277,15 @@
 		<div style="float: right; margin-right: 15px"><span id="hide_notice_button" class="link" style="font-weight: bold;">x</a></div>
 	</div>
 </div>
-    
+ 
+ 
+
 </body>
+ <footer>
+  <p>To find out further details about
+		this project please contact the primary investigator <a href="http://www.linkedin.com/pub/tania-jacob/51/190/127"> Tania Jacob</a> 
+  </p>
+</footer>  
+
 </html>
 

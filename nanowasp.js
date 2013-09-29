@@ -4399,6 +4399,12 @@ app.get('/:pagename', function(req, res){
             res.sendfile(__dirname + "/" + req.params.pagename);
     }
     
+
+    else if (req.params.pagename == '/logout') {
+        console.log ('la alala');
+        res.sendfile(__dirname + "/Login.html");
+    }
+
     else {
         res.sendfile(__dirname + "/" + req.params.pagename);
     }
@@ -4414,13 +4420,17 @@ app.get('/:pagename', function(req, res){
 //redirects based on login
 app.post('/login', passport.authenticate('local',
     { 
-       successRedirect: '/Games.html',
+       successRedirect: '/Home.html',
        failureRedirect: '/Login.html' 
     }));
   
-app.get('/logout', function(req, res){
-  req.logout();
-//  res.redirect('/Login.html');
+app.post('/logout', function(req, res){
+   req.session.destroy(); 
+  res.redirect('/Login.html');
+});
+
+app.get('/', function(req, res){
+  res.send('hello world');
 });
 
 function ensureAuthenticated(req, res, next) {
