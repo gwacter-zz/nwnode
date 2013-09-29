@@ -4286,38 +4286,188 @@ function disassemble(address, count) {
 //}());
 */
 
+//SETUP SERVER AND USER AUTHENTICATION
 var http    = require("http")
   , chalk   = require("chalk")
+  , flash   = require('connect-flash')
+  , util    = require('util')
   , fs      = require('fs')
+  , pg      = require('pg')   
   , fabric  = require('fabric').fabric
-  , app = require('express')()
-  , server = require('http').createServer(app)
-  , io = require('socket.io').listen(server);
+  , express = require ('express')
+  , app     = express()
+  , server  = require('http').createServer(app)
+  , io      = require('socket.io').listen(server)
+  , passport= require('passport')
+ , LocalStrategy = require('passport-local').Strategy
+ , isAuthenticated = false;   
 
+// configure Express
+app.configure(function() {
+  app.use(express.cookieParser());
+  app.use(express.bodyParser());
+  app.use(express.methodOverride());
+  app.use(express.session({ secret: 'keyboard cat' }));
+  app.use(passport.initialize());
+  app.use(passport.session());
+  app.use(app.router);
+  app.use(express.static(__dirname + '/../../public'));
+});
+
+
+
+var users = [
+    { id: 1, username: 'tania', password: 'password', email: 'tania@example.com' }
+  , { id: 2, username: 'joe', password: 'birthday', email: 'joe@example.com' }
+];
+
+
+// Use the LocalStrategy within Passport.
+//   Strategies in passport require a `verify` function, which accept
+//   credentials (in this case, a username and password), and invoke a callback
+//   with a user object.  In the real world, this would query a database;
+//   however, in this example we are using a baked-in set of users.
+passport.use(new LocalStrategy(
+  function(username, password, done) {
+    // asynchronous verification, for effect...
+    process.nextTick(function () {
+    console.log("In using the strategy now");
+
+// pg.connect(process.env.DATABASE_URL, function(err, client, done) {
+//   client.query('SELECT * FROM your_table', function(err, result) {
+//     done();
+//     if(err) return console.error(err);
+//     console.log(result.rows);
+//   });
+// });
+      // Find the user by username.  If there is no user with the given
+      // username, or the password is not correct, set the user to `false` to
+      // indicate failure and set a flash message.  Otherwise, return the
+      // authenticated `user`.
+      findByUsername(username, function(err, user) {
+        if (err) { return done(err); }
+        if (!user) { return done(null, false, { message: 'Unknown user ' + username }); }
+        if (user.password != password) { return done(null, false, { message: 'Invalid password' }); }
+        isAuthenticated = true;
+        return done(null, user);
+      })
+    });
+  }
+));
+
+function findById(id, fn) {
+  var idx = id - 1;
+  if (users[idx]) {
+    fn(null, users[idx]);
+  } else {
+    fn(new Error('User ' + id + ' does not exist'));
+  }
+}
+
+function findByUsername(username, fn) {
+  for (var i = 0, len = users.length; i < len; i++) {
+    var user = users[i];
+    if (user.username === username) {
+      return fn(null, user);
+    }
+  }
+  return fn(null, null);
+}
+
+// Passport session setup.
+//   To support persistent login sessions, Passport needs to be able to
+//   serialize users into and deserialize users out of the session.  Typically,
+//   this will be as simple as storing the user ID when serializing, and finding
+//   the user by ID when deserializing.
+passport.serializeUser(function(user, done) {
+  done(null, user.id);
+});
+
+passport.deserializeUser(function(id, done) {
+  findById(id, function (err, user) {
+    done(err, user);
+  });
+});
+
+//fetches the pages
+app.get('/:pagename', function(req, res){
+
+ //if (isAuthenticated) {
+    if (req.params.pagename == 'Games.html') {
+            var nw = new nanowasp.NanoWasp();
+            nw.main();
+            res.sendfile(__dirname + "/" + req.params.pagename);
+    }
+    
+    else {
+        res.sendfile(__dirname + "/" + req.params.pagename);
+    }
+
+// } 
+ 
+ // else { 
+ //   res.redirect('/Login.html');
+ // }
+
+});
+
+//redirects based on login
+app.post('/login', passport.authenticate('local',
+    { 
+       successRedirect: '/Games.html',
+       failureRedirect: '/Login.html' 
+    }));
+  
+app.get('/logout', function(req, res){
+  req.logout();
+//  res.redirect('/Login.html');
+});
+
+function ensureAuthenticated(req, res, next) {
+  if (req.isAuthenticated()) { return next(); }
+ // res.redirect('/login')
+}
 
 server.listen(8888);
 console.log(chalk.cyan("Server up on 8888"));
 console.log(chalk.cyan('io value is ' + io));
 
-app.get('/:pagename', function(req, res){
+var open = require('open');
 
-if (req.params.pagename == "Games.html"){
-       res.sendfile(__dirname + "/" + req.params.pagename);
-        nanowasp.Keyboard.init();
-        console.log(chalk.cyan("Hi loading Games page"))
-        var nw = new nanowasp.NanoWasp();
-        console.log ("made variable nw");
-        nw.main();
-        console.log ("finished running through main"); 
-        res.setHeader("Content-Type", "text/html");
+open('http://localhost:8888/Login.html');
+
+// var http    = require("http")
+//   , chalk   = require("chalk")
+//   , fs      = require('fs')
+//   , fabric  = require('fabric').fabric
+//   , express = require ('express')
+//   , app = express()
+//   , server = require('http').createServer(app)
+//   , io = require('socket.io').listen(server);
+
+
+// var passport = require('passport')
+//   , LocalStrategy = require('passport-local').Strategy;
+
+// var flash = require('connect-flash')
+//   , util = require('util');
+
+// server.listen(8888);
+// console.log(chalk.cyan("Server up on 8888"));
+// console.log(chalk.cyan('io value is ' + io));
+
+// app.get('/:pagename', function(req, res){
+
+// if (req.params.pagename == "Games.html"){
+//        res.sendfile(__dirname + "/" + req.params.pagename);
+//         nanowasp.Keyboard.init();
+//         console.log(chalk.cyan("Hi loading Games page"))
+//         var nw = new nanowasp.NanoWasp();
+//         console.log ("made variable nw");
+//         nw.main();
+//         console.log ("finished running through main"); 
+//         res.setHeader("Content-Type", "text/html");
      
-}
-
-else {
-      res.sendfile(__dirname + "/" + req.params.pagename);  
-}
-});
-
 
 
 
