@@ -622,68 +622,14 @@ nanowasp.Crtc.prototype = {
 
 
 
-//            console.log ("canvas today is  " + this._canvas);
-
-                    //this._graphicsContext.putImageData(characterImage, x, y, 0, 0, nanowasp.CrtcMemory.prototype.CHAR_WIDTH, this._scansPerRow);
-	//	socket.on('getdata',function(){
-//var fs = require('fs'),
- //   fabric = require('fabric').fabric,
-  //  out = fs.createWriteStream(__dirname + '/test.png');
-
-//var canvas_new = fabric.createCanvasForNode(200, 200);
-//var text = new fabric.Text('Hi TJ', {
-//  left: 100,
- // top: 100,
-//  fill: '#f55',
-//  angle: 15
-//});
-//canvas_new.add(text);
-
-//var stream = canvas_new.createPNGStream();
-//stream.on('data', function(chunk) {
- // out.write(chunk);
-//});
-
-
-  io.sockets.on('connection', function (socket) {
-    socket.on('getdata',function(){
-    io.sockets.emit('printdata', characterImage);
-});
-});
-//running servsider getdata function
-
-
-
-//  console.log("yo.");
-  //change the canvas to json object
-//var imageCanvas = characterImage.toJSON();
-//change the json object to json string
-//var js = JSON.stringify(imageCanvas);
-//nsole.log ("js being sent is  " + js);
-
-//        var charArray = new Array();
- //       var stringtest = "var dataTest ='" + characterImage +"';";
-      //  charArray.push("var dataTest ='" + stringtest);
-//charArray.push (characterImage);  
-   //     charArray.push(";");  
-  //receives the data from the printdata server function
-//  io.sockets.emit('printdata', stringtest);
-
-
-
- // 		console.log("yo render");
-		  
-		
-		
-    //    io.sockets.emit('printdata', charArray);
- //       console.log ("DONE EMITTING");    	
-	//});  
-    }
+                    io.sockets.on('connection', function (socket) {
+                    socket.on('getdata',function(){
+                    io.sockets.emit('printdata', characterImage);
+                    });
+                    });
+                }
      
-
-                
-
-                x += nanowasp.CrtcMemory.prototype.CHAR_WIDTH;
+               x += nanowasp.CrtcMemory.prototype.CHAR_WIDTH;
                 var CRTC_ADDRESS_SIZE = 16384;
                 address = (address + 1) % CRTC_ADDRESS_SIZE; 
             }
@@ -4286,6 +4232,7 @@ function disassemble(address, count) {
 //}());
 */
 
+
 //SETUP SERVER AND USER AUTHENTICATION
 var http    = require("http")
   , chalk   = require("chalk")
@@ -4302,6 +4249,7 @@ var http    = require("http")
  , LocalStrategy = require('passport-local').Strategy
  , isAuthenticated = false;   
 
+
 // configure Express
 app.configure(function() {
   app.use(express.cookieParser());
@@ -4315,12 +4263,11 @@ app.configure(function() {
 });
 
 
-
-var users = [
-    { id: 1, username: 'tania', password: 'password', email: 'tania@example.com' }
-  , { id: 2, username: 'joe', password: 'birthday', email: 'joe@example.com' }
-];
-
+var users;
+var loggedonUser;
+// Set up the DB Clients
+var pg = require('pg'); 
+var conString = "postgres://jacobtani:tjpassword@db.ecs.vuw.ac.nz/nanowasp";
 
 // Use the LocalStrategy within Passport.
 //   Strategies in passport require a `verify` function, which accept
@@ -4328,34 +4275,56 @@ var users = [
 //   with a user object.  In the real world, this would query a database;
 //   however, in this example we are using a baked-in set of users.
 passport.use(new LocalStrategy(
+
   function(username, password, done) {
+    
     // asynchronous verification, for effect...
     process.nextTick(function () {
-    console.log("In using the strategy now");
 
-// pg.connect(process.env.DATABASE_URL, function(err, client, done) {
-//   client.query('SELECT * FROM your_table', function(err, result) {
-//     done();
-//     if(err) return console.error(err);
-//     console.log(result.rows);
-//   });
-// });
-      // Find the user by username.  If there is no user with the given
-      // username, or the password is not correct, set the user to `false` to
-      // indicate failure and set a flash message.  Otherwise, return the
-      // authenticated `user`.
-      findByUsername(username, function(err, user) {
-        if (err) { return done(err); }
-        if (!user) { return done(null, false, { message: 'Unknown user ' + username }); }
-        if (user.password != password) { return done(null, false, { message: 'Invalid password' }); }
-        isAuthenticated = true;
-        return done(null, user);
-      })
-    });
-  }
-));
+      
+    // Set up what happend when the client runs
+     pg.connect(conString, function(err, client, done) {
+      
+      if(err) {
+         return console.error('error fetching client from pool', err);
+      }
+      
+      client.query('SELECT * FROM USERS;',function(err, result) {
+                     
+         if(err) {
+            return console.error('error running query', err);
+         }
+         
+         users = result.rows;
+         console.log ('users length is' + users.length);
 
+            findByUsername(username, function(err, user) {
+               console.log ('sweet as');
+               console.log ('user after sweetas is' + user + ' with username ' + username);
+               if (err) { console.log ('just erroring'); return done(err); }
+               if (!user) {console.log ('unknown user'); return done(null, false, { message: 'Unknown user ' + username }); }
+               if (user.password != password)  { console.log ('invalid pwd'); return done(null, false, { message: 'Invalid password' }); }
+               
+               isAuthenticated = true;
+               loggedonUser = user;
+               console.log ('got through tests');
+               //return done(null, loggingOnUser);
+               return done(null, user);
+         });
+       
+   });
+   });
+   // console.log ('loggingOnUser' + loggingOnUser);
+         //return done(null, null);
+   });
+console.log ('final return of loggedonUser: ' + loggedonUser );
+  return done(null, loggedonUser);
+   }
+   ));
+
+//find user according to their id
 function findById(id, fn) {
+   console.log ('inside findbyid with id' + id + 'fn of: ' + fn );
   var idx = id - 1;
   if (users[idx]) {
     fn(null, users[idx]);
@@ -4364,10 +4333,14 @@ function findById(id, fn) {
   }
 }
 
+//find user according to their username
 function findByUsername(username, fn) {
-  for (var i = 0, len = users.length; i < len; i++) {
+   console.log ('inside finbyusername with username');
+   console.log ('first username ' + users[0].username);
+  for (var i = 0; i< users.length; i++) {
     var user = users[i];
     if (user.username === username) {
+      console.log ('usernames same in findByUsername');
       return fn(null, user);
     }
   }
@@ -4380,12 +4353,16 @@ function findByUsername(username, fn) {
 //   this will be as simple as storing the user ID when serializing, and finding
 //   the user by ID when deserializing.
 passport.serializeUser(function(user, done) {
-  done(null, user.id);
+    console.log ('user serialise' + user.username);
+  //done(null, user.username);
+  done(null, user.userid);
 });
 
 passport.deserializeUser(function(id, done) {
+     console.log ('got into derserialising yo with id ' + id);
+  // done (null, id);
   findById(id, function (err, user) {
-    done(err, user);
+    done(err, user.userid);
   });
 });
 
@@ -4429,9 +4406,9 @@ app.post('/logout', function(req, res){
   res.redirect('/Login.html');
 });
 
-app.get('/', function(req, res){
-  res.send('hello world');
-});
+// app.get('/', function(req, res){
+//   res.send('hello world');
+// });
 
 function ensureAuthenticated(req, res, next) {
   if (req.isAuthenticated()) { return next(); }
