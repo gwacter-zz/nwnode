@@ -4262,7 +4262,6 @@ app.configure(function() {
   app.use(express.static(__dirname + '/../../public'));
 });
 
-
 var users;
 var loggedonUser;
 // Set up the DB Clients
@@ -4308,14 +4307,11 @@ passport.use(new LocalStrategy(
                isAuthenticated = true;
                loggedonUser = user;
                console.log ('got through tests');
-               //return done(null, loggingOnUser);
                return done(null, user);
          });
        
    });
    });
-   // console.log ('loggingOnUser' + loggingOnUser);
-         //return done(null, null);
    });
 console.log ('final return of loggedonUser: ' + loggedonUser );
   return done(null, loggedonUser);
@@ -4369,7 +4365,6 @@ passport.deserializeUser(function(id, done) {
 //fetches the pages
 app.get('/:pagename', function(req, res){
 
- //if (isAuthenticated) {
     if (req.params.pagename == 'Games.html') {
             var nw = new nanowasp.NanoWasp();
             nw.main();
@@ -4385,12 +4380,6 @@ app.get('/:pagename', function(req, res){
     else {
         res.sendfile(__dirname + "/" + req.params.pagename);
     }
-
-// } 
- 
- // else { 
- //   res.redirect('/Login.html');
- // }
 
 });
 
