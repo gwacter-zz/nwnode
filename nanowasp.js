@@ -4263,6 +4263,7 @@ app.configure(function() {
 });
 
 var users;
+var numberOfUsers;
 var loggedonUser;
 // Set up the DB Clients
 var pg = require('pg'); 
@@ -4295,6 +4296,7 @@ passport.use(new LocalStrategy(
          }
          
          users = result.rows;
+         numberOfUsers = users.length;
          console.log ('users length is' + users.length);
 
             findByUsername(username, function(err, user) {
@@ -4317,6 +4319,36 @@ console.log ('final return of loggedonUser: ' + loggedonUser );
   return done(null, loggedonUser);
    }
    ));
+
+//add new user
+function addNewUser (uname, password, firstname, lastname) {
+    console.log ('testing: ' + uname + "" + password + "" + firstname + "" + lastname + "");
+
+    // Set up what happend when the client runs
+    pg.connect(conString, function(err, client, done) {
+      
+        if(err) {
+            return console.error('error fetching client from pool', err);
+        }
+      
+        client.query('SELECT COUNT(*) FROM USERS;',function(err, result) {
+                     
+            if(err) {
+                return console.error('error running query', err);
+            }
+            var userscount = (result.rows[0].count);
+            console.log ('userscount is ' + userscount);
+            var id = userscount++;
+            client.query("INSERT INTO Users (FirstName, LastName, Username, Password, Email) VALUES ('" + firstname + "', '" + lastname + "', '" + uname + "', '" + password + "', '" + password + "');",function(err, result) {
+            // client.query("INSERT INTO Users (FirstName, LastName, Username, Password, Email) VALUES (" + id+ ", '" + firstname + "', '" + lastname + "', '" + uname + "', '" + password + "', 'jcmnn@gmail.com');",function(err, result) {
+
+                if(err) {
+                    return console.error('error running query', err);
+                }
+            });
+        });
+    });
+}
 
 //find user according to their id
 function findById(id, fn) {
@@ -4389,8 +4421,19 @@ app.post('/login', passport.authenticate('local',
        successRedirect: '/Home.html',
        failureRedirect: '/Login.html' 
     }));
-  
-app.post('/logout', function(req, res){
+
+app.post("/register",function(req, res){
+   // addNewUser
+    var username = req.body.Username;
+    var pwd = req.body.Password;
+    var fname = req.body.FirstName;
+    var lname = req.body.LastName;
+    addNewUser (username, pwd, fname, lname);
+    console.log ('username: ' + username + pwd + fname + lname);
+    res.redirect('/Home.html');
+ });
+
+ app.post('/logout', function(req, res){
    req.session.destroy(); 
   res.redirect('/Login.html');
 });
@@ -4401,7 +4444,6 @@ app.post('/logout', function(req, res){
 
 function ensureAuthenticated(req, res, next) {
   if (req.isAuthenticated()) { return next(); }
- // res.redirect('/login')
 }
 
 server.listen(8888);
@@ -4411,44 +4453,6 @@ console.log(chalk.cyan('io value is ' + io));
 var open = require('open');
 
 open('http://localhost:8888/Login.html');
-
-// var http    = require("http")
-//   , chalk   = require("chalk")
-//   , fs      = require('fs')
-//   , fabric  = require('fabric').fabric
-//   , express = require ('express')
-//   , app = express()
-//   , server = require('http').createServer(app)
-//   , io = require('socket.io').listen(server);
-
-
-// var passport = require('passport')
-//   , LocalStrategy = require('passport-local').Strategy;
-
-// var flash = require('connect-flash')
-//   , util = require('util');
-
-// server.listen(8888);
-// console.log(chalk.cyan("Server up on 8888"));
-// console.log(chalk.cyan('io value is ' + io));
-
-// app.get('/:pagename', function(req, res){
-
-// if (req.params.pagename == "Games.html"){
-//        res.sendfile(__dirname + "/" + req.params.pagename);
-//         nanowasp.Keyboard.init();
-//         console.log(chalk.cyan("Hi loading Games page"))
-//         var nw = new nanowasp.NanoWasp();
-//         console.log ("made variable nw");
-//         nw.main();
-//         console.log ("finished running through main"); 
-//         res.setHeader("Content-Type", "text/html");
-     
-
-
-
-
-//} 
 
 /*! z80.jscpp: z80 supplementary functions
    Copyright (c) 1999-2008 Philip Kendall, Matthew Westcott
