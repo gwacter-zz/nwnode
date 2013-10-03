@@ -12,6 +12,20 @@
 	<script src="http://vjs.zencdn.net/c/video.js"></script>
 	<script src="http://ajax.aspnetcdn.com/ajax/jquery.validate/1.9/jquery.validate.js" type="text/javascript"></script>
 
+	<script>
+		function validate(){
+			var password = document.getElementById("Password").value;
+			var conf = document.getElementById("confpwd").value;
+			alert(conf);
+			alert(password);
+			if(conf === password){				
+				return true;
+			}
+			alert("Password doesn't match")
+			return false;
+		}
+	</script>
+
 	</head>
 
 	<body>
@@ -82,7 +96,9 @@
 	                </div>
 	               
 	               <div class="tab-pane fade" id="create">
-	                <form id="tab" action="/register" method="post">
+	                <form id="tab" action="/register" method="post" onsubmit="return validate()"> 
+	      <!--          <form id="tab" action="/register" method="post"> -->
+
 	                    <label>First Name</label>
 	                    <input type="text" id="FirstName" name="FirstName" placeholder="" class="input-xlarge">
 	                    <label>Last Name</label>
@@ -92,7 +108,9 @@
          	            <label>Username</label>
 	                    <input type="text" placeholder=""  id="Username" name="Username" class="input-xlarge">
 	                    <label>Password</label>
-	                    <input type="text" placeholder="" id="Password" name="Password" class="input-xlarge"> 
+	                    <input type="password" placeholder="" id="Password" name="Password" class="input-xlarge"> 
+	                    <label>Confirm Password</label>
+	                    <input type="password" placeholder="" id="confpwd" name="confpwd" class="input-xlarge">
 	                    <div>
 	                      <button class="btn btn-primary">Create Account</button>
 	                    </div>
