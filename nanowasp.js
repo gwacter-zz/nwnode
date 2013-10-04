@@ -4031,6 +4031,19 @@ app.configure(function() {
   app.use(express.cookieParser());
   app.use(express.bodyParser());
   app.use(express.methodOverride());
+  app.use(function(req, res, next) {
+  
+  if (req.url != '/favicon.ico') {
+    return next();
+  } 
+  else {
+    res.status(200);
+    res.header('Content-Type', 'image/x-icon');
+    res.header('Cache-Control', 'max-age=4294880896');
+    res.end();
+  }
+  });
+
   app.use(express.session({ secret: 'keyboard cat' }));
   app.use(passport.initialize());
   app.use(passport.session());
@@ -4046,7 +4059,6 @@ app.get('/logout', function(req, res) {
   res.redirect('/Login.html');
 });
 
-var users;
 var numberOfUsers;
 var loggedonUser;
 // Set up the DB Clients
@@ -4067,51 +4079,60 @@ passport.use(new LocalStrategy(
 
       
     // Set up what happend when the client runs
-     pg.connect(conString, function(err, client, done) {
+     // pg.connect(conString, function(err, client, done) {
       
-      if(err) {
-         return console.error('Error fetching client from pool', err);
-      }
+     //  if(err) {
+     //     return console.error('Error fetching client from pool', err);
+     //  }
       
-      //query to login and verify a user
-      client.query('SELECT * FROM USERS;',function(err, result) {
-                     
-         if(err) {
-            return console.error('Error running query retrieving all the users', err);
-         }
+     //  //query to login and verify a user
+     //  client.query('SELECT * FROM USERS;',function(err, result) {
+     //     done ();            
+     //     if(err) {
+     //        return console.error('Error running query retrieving all the users', err);
+     //     }
          
-         users = result.rows;
-         numberOfUsers = users.length;
-         console.log ('users length is' + users.length);
-
-            findByUsername(username, function(err, user) {
+             findByUsername(username, function(err, user) {
                console.log ('sweet as');
-               console.log ('user after sweetas is' + user + ' with username ' + username);
-               if (err) { console.log ('just erroring'); return done(err); }
-               if (!user) {console.log ('unknown user'); return done(null, false, { message: 'Unknown user ' + username }); }
-               if (user.password != password)  { console.log ('invalid pwd'); return done(null, false, { message: 'Invalid password' }); }
+               console.log ('user email after sweetas is' + user + ' with username ' + username);
+               if (err) { 
+                    console.log ('just erroring'); 
+                    return done(err); 
+                }
+               
+               if (!user) {console.log ('unknown user'); 
+                        return done(null, false, { message: 'Unknown user ' + username }); 
+                }
+               if (user.password != password)  { 
+                        console.log ('invalid pwd'); 
+                        return done(null, false, { message: 'Invalid password' }); 
+                }
                
                isAuthenticated = true;
-               loggedonUser = user;
+               console.log ('user is ' + user)
                console.log ('got through tests');
                return done(null, user);
-         });
+
+           //}
+       //  });
        
+///
+ //  });
    });
-   });
-   });
-  return done(null, loggedonUser);
-   }
+  //return done(null, false);
+   })
+}
    ));
 
 //add new user to the database
-function addNewUser (uname, password, firstname, lastname) {
+function addNewUser (uname, password, firstname, lastname, email) {
 
     // Set up what happend when the client runs
     pg.connect(conString, function(err, client, done) {
       
         if(err) {
-            return console.error('error fetching client from pool', err);
+            console.error('error fetching client from pool', err);
+            done ();
         }
       
         client.query('SELECT COUNT(*) FROM USERS;',function(err, result) {
@@ -4121,12 +4142,14 @@ function addNewUser (uname, password, firstname, lastname) {
             }
             var userscount = (result.rows[0].count);
             var id = userscount++;
-            client.query("INSERT INTO Users (FirstName, LastName, Username, Password, Email) VALUES ('" + firstname + "', '" + lastname + "', '" + uname + "', '" + password + "', '" + password + "');",function(err, result) {
+            client.query("INSERT INTO Users (FirstName, LastName, Username, Password, Email) VALUES ('" + firstname + "', '" + lastname + "', '" + uname + "', '" + password + "', '" + email + "');",function(err, result) {
             // client.query("INSERT INTO Users (FirstName, LastName, Username, Password, Email) VALUES (" + id+ ", '" + firstname + "', '" + lastname + "', '" + uname + "', '" + password + "', 'jcmnn@gmail.com');",function(err, result) {
 
                 if(err) {
                     return console.error('error running query', err);
                 }
+
+                done();
             });
         });
     });
@@ -4136,25 +4159,73 @@ function addNewUser (uname, password, firstname, lastname) {
 function findById(id, fn) {
    console.log ('inside findbyid with id' + id + 'fn of: ' + fn );
   var idx = id - 1;
-  if (users[idx]) {
-    fn(null, users[idx]);
-  } else {
-    fn(new Error('User ' + id + ' does not exist'));
-  }
+
+    pg.connect(conString, function(err, client, done) {
+      
+        if(err) {
+            return console.error('error fetching client from pool', err);
+        }
+      
+        client.query('SELECT * FROM USERS WHERE userid= ' + id + ';',function(err, result) {
+                     
+            if(err) {
+                return console.error('Error retrieving number of users query', err);
+            }
+            
+            if (result.rows[0].username != null ) {
+                   console.log ('testing hi'); 
+                    fn (null, result.rows[0]);
+            }
+
+            else {
+               fn(new Error('User ' + id + ' does not exist')); 
+            }
+        });
+    });
+
 }
 
 //find user according to their username
 function findByUsername(username, fn) {
-   console.log ('inside finbyusername with username');
-   console.log ('first username ' + users[0].username);
-  for (var i = 0; i< users.length; i++) {
-    var user = users[i];
-    if (user.username === username) {
-      console.log ('usernames same in findByUsername');
-      return fn(null, user);
-    }
-  }
-  return fn(null, null);
+   console.log ('inside finbyusername with username  ' + username);
+   console.log ('value of pg is '  + pg);
+
+    pg.connect(conString, function(err, client, done) {
+      console.log ('got into pg.connect');
+        if(err) {
+            return console.error('error fetching client from pool', err);
+        }
+      
+
+        console.log ('value of client is ' + client);
+        client.query('SELECT * FROM USERS;',function(err, result) {
+      
+            console.log ('got into query of selecting all users in find username');         
+            if(err) {
+                return console.error('Error retrieving number of users query', err);
+            }
+
+            if (result.rows.length) {
+            
+            for (var i = 0; i< result.rows.length; i++) {
+                var user = result.rows[i];
+
+                console.log ('user.username' + user.username + 'username: ' + username);
+                
+                if (user.username === username) {
+                    console.log ('usernames same in findByUsername');
+                    return fn(null, user);
+                }
+            }
+        }
+
+        else {
+            console.log ('empty bro');
+            return console.error ('Empty database of users');
+        }
+       });
+
+    });
 }
 
 // Passport session setup.
@@ -4199,7 +4270,7 @@ app.get('/:pagename', function(req, res){
 app.post('/login', passport.authenticate('local',
     { 
        successRedirect: '/Home.html',
-       failureRedirect: '/Login.html' 
+       failureRedirect: '/LoginFailure.html' 
     }));
 
 app.post("/register",function(req, res){   
@@ -4207,8 +4278,9 @@ app.post("/register",function(req, res){
     var pwd = req.body.Password;
     var fname = req.body.FirstName;
     var lname = req.body.LastName;
-    addNewUser (username, pwd, fname, lname);
-    console.log ('username: ' + username + pwd + fname + lname);
+    var remail = req.body.Email;
+    addNewUser (username, pwd, fname, lname, remail);
+    console.log ('username: ' + username + pwd + fname + lname + remail);
     res.redirect('/Home.html');
  });
 
