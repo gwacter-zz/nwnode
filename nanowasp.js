@@ -4076,53 +4076,29 @@ passport.use(new LocalStrategy(
     
     // asynchronous verification, for effect...
     process.nextTick(function () {
-
-      
-    // Set up what happend when the client runs
-     // pg.connect(conString, function(err, client, done) {
-      
-     //  if(err) {
-     //     return console.error('Error fetching client from pool', err);
-     //  }
-      
-     //  //query to login and verify a user
-     //  client.query('SELECT * FROM USERS;',function(err, result) {
-     //     done ();            
-     //     if(err) {
-     //        return console.error('Error running query retrieving all the users', err);
-     //     }
-         
-             findByUsername(username, function(err, user) {
-               console.log ('sweet as');
-               console.log ('user email after sweetas is' + user + ' with username ' + username);
-               if (err) { 
-                    console.log ('just erroring'); 
-                    return done(err); 
-                }
+        findByUsername(username, function(err, user) {
+            if (err) { 
+                console.log ('just erroring'); 
+                return done(err); 
+            }
                
-               if (!user) {console.log ('unknown user'); 
-                        return done(null, false, { message: 'Unknown user ' + username }); 
-                }
-               if (user.password != password)  { 
-                        console.log ('invalid pwd'); 
-                        return done(null, false, { message: 'Invalid password' }); 
-                }
-               
-               isAuthenticated = true;
-               console.log ('user is ' + user)
-               console.log ('got through tests');
-               return done(null, user);
+            if (!user) {console.log ('unknown user'); 
+                return done(null, false, { message: 'Unknown user ' + username }); 
+            }
 
-           //}
-       //  });
-       
-///
- //  });
-   });
-  //return done(null, false);
-   })
-}
-   ));
+            if (user.password != password)  { 
+                console.log ('invalid pwd'); 
+                return done(null, false, { message: 'Invalid password' }); 
+            }
+               
+            isAuthenticated = true;
+            console.log ('user is ' + user)
+            return done(null, user);
+
+        });
+    })
+  }
+));
 
 //add new user to the database
 function addNewUser (uname, password, firstname, lastname, email) {
@@ -4142,7 +4118,7 @@ function addNewUser (uname, password, firstname, lastname, email) {
             }
             var userscount = (result.rows[0].count);
             var id = userscount++;
-            client.query("INSERT INTO Users (FirstName, LastName, Username, Password, Email) VALUES ('" + firstname + "', '" + lastname + "', '" + uname + "', '" + password + "', '" + email + "');",function(err, result) {
+            client.query("INSERT INTO Users (FirstName, LastName, Username, Password, Email, Score) VALUES ('" + firstname + "', '" + lastname + "', '" + uname + "', '" + password + "', '" + email + "', 0);",function(err, result) {
             // client.query("INSERT INTO Users (FirstName, LastName, Username, Password, Email) VALUES (" + id+ ", '" + firstname + "', '" + lastname + "', '" + uname + "', '" + password + "', 'jcmnn@gmail.com');",function(err, result) {
 
                 if(err) {
@@ -4157,8 +4133,7 @@ function addNewUser (uname, password, firstname, lastname, email) {
 
 //find user according to their id
 function findById(id, fn) {
-   console.log ('inside findbyid with id' + id + 'fn of: ' + fn );
-  var idx = id - 1;
+console.log ('inside findbyid with id' + id + 'fn of: ' + fn );
 
     pg.connect(conString, function(err, client, done) {
       
@@ -4173,7 +4148,6 @@ function findById(id, fn) {
             }
             
             if (result.rows[0].username != null ) {
-                   console.log ('testing hi'); 
                     fn (null, result.rows[0]);
             }
 
@@ -4188,42 +4162,36 @@ function findById(id, fn) {
 //find user according to their username
 function findByUsername(username, fn) {
    console.log ('inside finbyusername with username  ' + username);
-   console.log ('value of pg is '  + pg);
 
     pg.connect(conString, function(err, client, done) {
-      console.log ('got into pg.connect');
         if(err) {
             return console.error('error fetching client from pool', err);
         }
       
 
-        console.log ('value of client is ' + client);
         client.query('SELECT * FROM USERS;',function(err, result) {
       
-            console.log ('got into query of selecting all users in find username');         
             if(err) {
                 return console.error('Error retrieving number of users query', err);
             }
 
             if (result.rows.length) {
             
-            for (var i = 0; i< result.rows.length; i++) {
-                var user = result.rows[i];
-
-                console.log ('user.username' + user.username + 'username: ' + username);
+                for (var i = 0; i< result.rows.length; i++) {
+                    var user = result.rows[i];
                 
-                if (user.username === username) {
-                    console.log ('usernames same in findByUsername');
-                    return fn(null, user);
+                    if (user.username === username) {
+                        console.log ('usernames same in findByUsername');
+                        return fn(null, user);
+                    }
                 }
             }
-        }
 
-        else {
-            console.log ('empty bro');
-            return console.error ('Empty database of users');
-        }
-       });
+            else {
+                console.log ('empty bro');
+                return console.error ('Empty database of users');
+            }
+        });
 
     });
 }
@@ -4256,8 +4224,7 @@ app.get('/:pagename', function(req, res){
     
 
     else if (req.params.pagename === '/logout') {
-         console.log ('la alala');
-        res.sendfile(__dirname + "/Login.html");
+            res.sendfile(__dirname + "/Login.html");
     }
 
     else {
