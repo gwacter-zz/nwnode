@@ -4012,9 +4012,7 @@ function disassemble(address, count) {
 var http    = require("http")
   , chalk   = require("chalk")
   , flash   = require('connect-flash')
-  , util    = require('util')
   , fs      = require('fs')
-  , flash = require ('connect-flash')
   , pg      = require('pg')   
   , fabric  = require('fabric').fabric
   , express = require ('express')
@@ -4053,23 +4051,20 @@ app.configure(function() {
 });
 
 app.get('/logout', function(req, res) {
-  // req.session.destroy();
   isAuthenticated = false;
   req.logout();
   res.redirect('/Login.html');
 });
 
-var numberOfUsers;
-var loggedonUser;
+app.get('/stats', function(req, res) {
+  findRegisteredUsers();
+});
+
 // Set up the DB Clients
 var pg = require('pg'); 
 var conString = "postgres://jacobtani:tjpassword@db.ecs.vuw.ac.nz/nanowasp";
 
-// Use the LocalStrategy within Passport.
-//   Strategies in passport require a `verify` function, which accept
-//   credentials (in this case, a username and password), and invoke a callback
-//   with a user object.  In the real world, this would query a database;
-//   however, in this example we are using a baked-in set of users.
+//verify the user upon login
 passport.use(new LocalStrategy(
 
   function(username, password, done) {
@@ -4196,6 +4191,42 @@ function findByUsername(username, fn) {
     });
 }
 
+//find game player stats
+function findRegisteredUsers(username, fn) {
+   console.log ('inside finbyusername with username  ' + username);
+
+    pg.connect(conString, function(err, client, done) {
+        if(err) {
+            return console.error('error fetching client from pool', err);
+        }
+      
+
+        client.query('SELECT * FROM USERS;',function(err, result) {
+      
+            if(err) {
+                return console.error('Error retrieving number of users query', err);
+            }
+
+            if (result.rows.length) {
+                console.log ('got players');
+                console.log ('players are ' + users  + "users[]" + result.rows[0]);
+               io.sockets.on('connection', function (socket) {
+                    socket.on('getplayers',function(){
+                        io.sockets.emit('registeredusers', result.rows);
+                    });
+                });
+            }
+            
+            else {
+                console.log ('empty bro');
+                return console.error ('Empty database of users');
+            }
+
+        });
+
+    });
+}
+
 // Passport session setup.
 //   To support persistent login sessions, Passport needs to be able to
 //   serialize users into and deserialize users out of the session.  Typically,
@@ -4250,11 +4281,6 @@ app.post("/register",function(req, res){
     console.log ('username: ' + username + pwd + fname + lname + remail);
     res.redirect('/Home.html');
  });
-
-// app.get('/logout', function(req, res) {
-//   //req.session.destroy();
-//   res.redirect('/Home.html');
-// });
 
 function ensureAuthenticated(req, res, next) {
   if (req.isAuthenticated()) { return next(); }

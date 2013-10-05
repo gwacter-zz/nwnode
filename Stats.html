@@ -6,6 +6,29 @@
 <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
 <script
 	src="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.0/js/bootstrap.min.js"></script>
+<script src="http://localhost:8888/socket.io/socket.io.js"></script>
+
+<script>
+	$(function () {
+		var socket = io.connect("http://localhost:8888");
+	//	alert ('connected socket');
+		// on connection to server call the get data method
+		socket.on('connect', function(){
+	//		alert ('connected pt2');
+			socket.emit('getplayers');
+	    });
+
+			// call the server-side function 'adduser' and send one parameter (value of prompt)
+		socket.on('registeredusers', function(players){ 
+			alert ('reg users');	
+			var length = imagedataobject.length;
+			alert ('length of registered users is: ' + registeredusers.length);
+			var data = imagedataobject.data;
+		});
+
+ 	});
+</script>	
+
 </head>
 
 <div class="navbar navbar-inverse navbar-fixed-top">
@@ -24,8 +47,15 @@
 					<li ><a href="Games.html"> Games</a></li>
 					<li class="active"><a href="Stats.html">Player Statistics</a></li>
 				</ul>
-				
 			</div>
+
+			<div class= "nav pull-right">
+<!--  				<p class="navbar-text">Logged in as: </p>
+ --> 				
+						<li method="get" action="/logout"><a href="/logout">Logout</a></li>
+ 			</div>	
+
+
 		</div>
 	</div>
 </div>
@@ -45,35 +75,41 @@
 <th align="center"> Score </th>
 <tr> 
 	<td> TJ </td>
-	<td> 1000 </td>
+	<td> 2500 </td>
 </tr>
 <tr> 
 	<td align="center"> Anita </td>
-	<td align="center"> 1000 </td>
+	<td align="center"> 1500 </td>
 </tr>
 <tr> 
 	<td> Kelsey </td>
-	<td> 1000 </td>
+	<td> 1400 </td>
 </tr>
 <tr> 
 	<td> Sarah </td>
-	<td> 1000 </td>
+	<td> 1200 </td>
 </tr>
 <tr> 
 	<td> James </td>
-	<td> 1500 </td>
+	<td> 1800 </td>
 </tr>
 <tr> 
 	<td> Iain </td>
-	<td> 1560 </td>
+	<td> 1760 </td>
 </tr>
 <tr> 
-	<td> Matt </td>
-	<td> 1300 </td>
+	<td> Matthew </td>
+	<td> 1200 </td>
 </tr>
 
 </table>
 </center>
+<!--
+<div>
+	<p> testing </p>
+  <form id="tab" action="/stats" method="get"> </form>
+</div>
+-->
 
 </body>
  <br/>  <br/>  <br/>  <br/>  <br/>  <br/>  <br/>
