@@ -8,29 +8,6 @@
 	src="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.0/js/bootstrap.min.js"></script>
 <script src="http://localhost:8888/socket.io/socket.io.js"></script>
 
-<!--
-<script>
-	$(function () {
-		var socket = io.connect("http://localhost:8888");
-	//	alert ('connected socket');
-		// on connection to server call the get data method
-		socket.on('connect', function(){
-	//		alert ('connected pt2');
-			socket.emit('getplayers');
-	    });
-
-			// call the server-side function 'adduser' and send one parameter (value of prompt)
-		socket.on('registeredusers', function(players){ 
-			alert ('reg users');	
-			var length = imagedataobject.length;
-			alert ('length of registered users is: ' + registeredusers.length);
-			var data = imagedataobject.data;
-		});
-
- 	});
-</script>	
--->
-
 
 </head>
 <!-- <body> -->
@@ -64,98 +41,62 @@
 					<li method="get" action="/logout"><a href="/logout">Logout</a></li>
 			</div>	
 
-			
-<!--
-// <script text="text/mustache">
-
-// var data, template, html;
-// // data = {
-// // 	name : "Some tutes sites",
-// // 	sites : ['netflix', 'test2', 'test3']
-// // };
-// template = "<h1> Logged in as: {{name}} </h1> ";
-// // template = "<h1> Logged in as: {{name}} </h1> <ul> {{#sites}} <li> {{.}} </li> {{/sites}} </ul>";
-
-// html = Mustache.to_html(template, data);
-// document.write(html);
-// </script>
--->
-
 
 		</div>
 	</div>
 </div>
 
 
-<br />
-
-<div class="row"></div>
-<h1 align="center">
-	<font colour="red"> Player Statistics </font>
-</h1>
-
-<!--<script text="text/mustache">
-alert ('name is ' + {{name}});
-var html;
-var template = "<h1> Logged in as: {{name}} </h1> ";
-html = Mustache.to_html(template, data);
-document.write(html);
-</script>
--->
-
-</div>
-<br/><br/>
+<br/>
+<h2 align="center"> Player Statistics </h2>
 
 
-
-<!-- <center>
+ <center>
 <table class="table table-striped" border="1" width="500" height = "200" align="center">
 <th align="center" class="success"> Game Player </th>
 <th align="center" class="success"> Score </th>
 <tr> 
 	<td> TJ </td>
-	<td> 2500 </td>
+	<td> 4500 </td>
 </tr>
 <tr> 
-	<td align="center"> Anita </td>
-	<td align="center"> 1500 </td>
+	<td> Santa do you even gift brah </td>
+	<td> 3400 </td>
 </tr>
 <tr> 
-	<td> Kelsey </td>
-	<td> 1400 </td>
+	<td> iplk </td>
+	<td> 2800 </td>
 </tr>
 <tr> 
-	<td> Sarah </td>
-	<td> 1200 </td>
+	<td> Unclebully2 </td>
+	<td> 2100 </td>
 </tr>
 <tr> 
-	<td> James </td>
+	<td> Ob264 </td>
+	<td> 1950 </td>
+</tr>
+<tr> 
+	<td> Satayyy123 </td>
 	<td> 1800 </td>
 </tr>
+
 <tr> 
-	<td> Iain </td>
+	<td> Psyqor </td>
 	<td> 1760 </td>
 </tr>
+
 <tr> 
-	<td> Matthew </td>
+	<td> Miss Ziggles </td>
 	<td> 1200 </td>
 </tr>
+<tr> 
+	<td> Credence </td>
+	<td> 1100 </td>
+</tr>
+
 
 </table>
 </center>
- --><!--
-<div>
-	<p> testing </p>
-  <form id="tab" action="/stats" method="get"> </form>
-</div>
--->
-
-
-
-
-
-</body>
- <br/>  <br/>  <br/>  <br/>  
 
 
  <footer>
@@ -163,5 +104,13 @@ document.write(html);
 		this project please contact the primary investigator <a href="http://www.linkedin.com/pub/tania-jacob/51/190/127"> Tania Jacob</a> 
   </p>
 </footer>  
+
+
+
+</body>
+ <br/>  <br/>  <br/>  <br/>  
+
+
+
 
 </html>

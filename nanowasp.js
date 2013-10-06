@@ -4066,8 +4066,8 @@ app.get('/logout', function(req, res) {
   res.redirect('/Login.html');
 });
 
+
 app.get('/Stats.html', function(req, res) {
-    
     findById(req.user, function(err, user){
             if(err){
                 return console.err (err) ;
@@ -4075,6 +4075,7 @@ app.get('/Stats.html', function(req, res) {
                 res.render('Stats.html', {name:user.username});
             }
         });
+
 });
 
 app.get('/Home.html', function(req, res) {
@@ -4234,8 +4235,9 @@ function findByUsername(username, fn) {
 }
 
 //find game player stats
-function findRegisteredUsers(username, fn) {
-   console.log ('inside finbyusername with username  ' + username);
+function findRegisteredUsers(user, fn) {
+    console.log ('fn is ' + fn);
+var usersArray = new Array ();
 
     pg.connect(conString, function(err, client, done) {
         if(err) {
@@ -4243,27 +4245,30 @@ function findRegisteredUsers(username, fn) {
         }
       
 
-        client.query('SELECT * FROM USERS;',function(err, result) {
+        client.query('SELECT username FROM USERS;',function(err, result) {
       
             if(err) {
                 return console.error('Error retrieving number of users query', err);
             }
 
             if (result.rows.length) {
+                console.log ('result.rows[0] is' + result);
                 console.log ('got players');
-                console.log ('players are ' + users  + "users[]" + result.rows[0]);
-               io.sockets.on('connection', function (socket) {
-                    socket.on('getplayers',function(){
-                        io.sockets.emit('registeredusers', result.rows);
-                    });
-                });
+
+
+                for (var i=0; i < result.rows.length; i++) {
+                    usersArray.push(result.rows[i].username);
+                    console.log ('result.rows leehehe' + result.rows[i].username);
+                    console.log ('users array length is ' + usersArray.length);
+                }
+                console.log ('out of loop');
+                return done (null, usersArray);  
             }
             
             else {
                 console.log ('empty bro');
-                return console.error ('Empty database of users');
+                return done (null, false);
             }
-
         });
 
     });
