@@ -139,6 +139,7 @@
 
 			<div class="container">
 				<a class="brand" href="#">Microbee Games Portal</a>
+				
 				<div class="nav-collapse collapse">
 					<ul class="nav">
 						<li><a href="Home.html"> Home </a></li>
@@ -147,13 +148,11 @@
 					</ul>	    
          	    </div>
 
-<div class= "nav pull-right">
-<script src= "mustache.js" type="text/javascript"> </script>
-
- 				<p class="navbar-text">Logged in as: {{name}} </p>
- 					
-						<li method="get" action="/logout"><a href="/logout">Logout</a></li>
-</div>	
+				<div class= "nav pull-right">
+					<script src= "mustache.js" type="text/javascript"> </script>
+					<li> <a href="#">Logged in as: {{name}} </a></li> 				
+					<li method="get" action="/logout"><a href="/logout">Logout</a></li>
+				</div>	
 
 			</div>
 		</div>
