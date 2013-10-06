@@ -4019,6 +4019,8 @@ var http    = require("http")
   , app     = express()
   , server  = require('http').createServer(app)
   , io      = require('socket.io').listen(server)
+  , engines = require('consolidate')
+  , mustache   = require('mustache')
   , passport= require('passport')
  , LocalStrategy = require('passport-local').Strategy
  , isAuthenticated = false;   
@@ -4048,6 +4050,14 @@ app.configure(function() {
   app.use(flash());
   app.use(app.router);
   app.use(express.static(__dirname + '/../../public'));
+  app.set('views', __dirname + '/');
+    app.set('view engine', 'handlebars');
+    app.engine('.html', engines.handlebars);
+    app.use(express.errorHandler({
+        dumpExceptions:true, 
+        showStack:true
+    }));
+  
 });
 
 app.get('/logout', function(req, res) {
@@ -4056,10 +4066,41 @@ app.get('/logout', function(req, res) {
   res.redirect('/Login.html');
 });
 
-app.get('/stats', function(req, res) {
-  findRegisteredUsers();
+app.get('/Stats.html', function(req, res) {
+    
+    findById(req.user, function(err, user){
+            if(err){
+                return console.err (err) ;
+            } else {
+                res.render('Stats.html', {name:user.username});
+            }
+        });
 });
 
+app.get('/Home.html', function(req, res) {
+    
+    findById(req.user, function(err, user){
+            if(err){
+                return console.err (err) ;
+            } else {
+                res.render('Home.html', {name:user.username});
+            }
+        });
+});
+
+app.get('/Games.html', function(req, res) {
+    
+    findById(req.user, function(err, user){
+            if(err){
+                return console.err (err) ;
+            } else {
+                res.render('Games.html', {name:user.username});
+                var nw = new nanowasp.NanoWasp();
+                nw.main();
+
+            }
+        });
+});
 // Set up the DB Clients
 var pg = require('pg'); 
 var conString = "postgres://jacobtani:tjpassword@db.ecs.vuw.ac.nz/nanowasp";
@@ -4149,6 +4190,7 @@ console.log ('inside findbyid with id' + id + 'fn of: ' + fn );
             else {
                fn(new Error('User ' + id + ' does not exist')); 
             }
+            done();
         });
     });
 
@@ -4243,6 +4285,7 @@ passport.deserializeUser(function(id, done) {
     done(err, user.userid);
   });
 });
+
 
 //fetches the pages
 app.get('/:pagename', function(req, res){
