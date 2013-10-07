@@ -4327,7 +4327,7 @@ app.post("/register",function(req, res){
     var remail = req.body.Email;
     addNewUser (username, pwd, fname, lname, remail);
     console.log ('username: ' + username + pwd + fname + lname + remail);
-    res.redirect('/Home.html');
+    res.render('NewLogin.html', {name:username});
  });
 
 function ensureAuthenticated(req, res, next) {
